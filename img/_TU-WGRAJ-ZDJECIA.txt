@@ -1,0 +1,23 @@
+Tu wgraj zdjecia strony. Nazwy musza sie zgadzac co do znaku.
+Po wgraniu pliku ramka z opisem znika sama - nie trzeba nic zmieniac w kodzie.
+
+Zajecia (pionowe, proporcje 4:5):
+  szarfy.jpg          - figura na szarfach
+  kolo.jpg            - figura na kole
+  akrobatyka.jpg      - element akrobatyczny na macie
+  stretching.jpg      - rozciaganie na sali
+
+Sala i lokalizacje:
+  sala.jpg            - wnetrze sali z szarfami   (pionowe 4:5)
+  sala-funka.jpg      - sala Funka 11             (poziome 16:10)
+  sala-baltycka.jpg   - sala Baltycka 15          (poziome 16:10)
+
+Galeria (pionowe, proporcje 3:4):
+  galeria-1.jpg       - zajecia dla dzieci
+  galeria-2.jpg       - zajecia dla mlodziezy
+  galeria-3.jpg       - zajecia dla doroslych
+  galeria-4.jpg       - zawody i medale
+
+Portrety trenerek: podfolder trenerki/ (osobna sciagawka w srodku)
+
+Dluzszy bok ok. 1600 px, plik do ~400 KB.
