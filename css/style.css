@@ -21,6 +21,7 @@
   --niebo-1: #EAF7FE;      /* najwyżej — jasne niebo */
   --niebo-2: #CDEAFB;
   --niebo-3: #A8DCF4;      /* mgiełka nad wodą */
+  --niebo-4: #93D3F0;      /* przystanek dla sekcji „Kolonie i urodziny" */
   --powierzchnia: #7FCBEC; /* laguna tuż pod taflą */
   --woda-1: #0F5D8E;       /* zanurzenie */
   --woda-2: #0B4D77;
@@ -177,7 +178,8 @@ a { color: var(--accent); text-underline-offset: 0.2em; text-decoration-thicknes
    bez szwu od nieba na górze do otchłani na dole.                          */
 #gora        { background: linear-gradient(180deg, var(--niebo-1) 0%, var(--niebo-2) 100%); }
 #o-nas       { background: linear-gradient(180deg, var(--niebo-2) 0%, var(--niebo-3) 100%); }
-#zajecia     { background: linear-gradient(180deg, var(--niebo-3) 0%, var(--powierzchnia) 100%); }
+#zajecia     { background: linear-gradient(180deg, var(--niebo-3) 0%, var(--niebo-4) 100%); }
+#oferta      { background: linear-gradient(180deg, var(--niebo-4) 0%, var(--powierzchnia) 100%); }
 #galeria     { background: linear-gradient(180deg, var(--powierzchnia) 0%, var(--woda-1) 100%); }
 #kadra       { background: linear-gradient(180deg, var(--woda-1) 0%, var(--woda-2) 100%); }
 #lokalizacje { background: linear-gradient(180deg, var(--woda-2) 0%, var(--woda-3) 100%); }
@@ -424,6 +426,11 @@ p:last-child { margin-bottom: 0; }
   align-items: center;
   min-height: 2.75rem;
   padding: 0 0.15rem;
+  /* Pozycje menu są elementami elastycznymi i przy ciasnym pasku kurczyły się
+     poniżej własnej treści — tekst łamał się w środku, a dwie pozycje siadały
+     o 2 px niżej od reszty. Zakaz łamania sprawia, że menu albo mieści się
+     w całości, albo problem widać od razu, zamiast po cichu zniekształcać. */
+  white-space: nowrap;
   color: var(--heading);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -505,7 +512,6 @@ p:last-child { margin-bottom: 0; }
 .mobile-nav__list a {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   min-height: 3.5rem;
   color: var(--heading);
   font-family: var(--font-display);
@@ -513,13 +519,6 @@ p:last-child { margin-bottom: 0; }
   font-weight: 700;
   text-transform: none;
   text-decoration: none;
-}
-.mobile-nav__list a span {
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--brand-700);
 }
 /* Telefon w poziomie: na listę zostaje ok. 300 px wysokości, a pozycje po
    3,5rem kazały przewijać całe menu, żeby dojść do zapisów na dole.
@@ -546,11 +545,27 @@ p:last-child { margin-bottom: 0; }
   text-decoration: none;
 }
 
-@media (min-width: 62rem) {
+/* Menu poziome pokazujemy dopiero od 70rem (1120 px), nie od 62rem.
+
+   Siedem pozycji z „Kolonie i urodziny" potrzebuje 740 px. Razem z logotypem
+   (176 px) i przyciskiem zapisów (108 px) daje to 1056 px — przy 992 px pasek
+   ma 977 px, więc brakowało 79 px. Flexbox nie zgłaszał tego jako przepełnienie:
+   ściskał logotyp do 44 px, a napis „AerialParadise" wychodził poza jego
+   ramkę i **wjeżdżał pod pozycję „O nas"**. Stąd wrażenie, że menu nachodzi
+   na logo.
+
+   Poniżej tej szerokości nawigację przejmuje menu pod hamburgerem — a ono
+   ma bogatszą listę, z rozbiciem zajęć i obu ofert na osobne pozycje.     */
+@media (min-width: 70rem) {
   .nav { display: block; }
   .nav-toggle { display: none; }
   .mobile-nav { display: none; }
 }
+
+/* Logotyp nie może być ściskany, żeby zrobić miejsce menu — jego napis i tak
+   nie zawija się ani nie przycina, więc „zaoszczędzone" piksele wychodzą
+   spod spodu i nachodzą na sąsiada. Lepiej, żeby zabrakło miejsca widocznie. */
+.brand { flex: none; }
 
 /* == 07. HERO ============================================================ */
 
@@ -739,52 +754,53 @@ p:last-child { margin-bottom: 0; }
 /* Kadry poziome docinamy do pionu tak, żeby postać została w kadrze */
 .strip .photo--kadr img { object-position: 56% 42%; }
 @media (min-width: 48rem) {
-  /* 8 zdjęć: 4 × 2 — bez osieroconego kafla w ostatnim rzędzie */
+  /* Siatka bez JS — po włączeniu przesuwu układ przejmuje `.strip-pas`. */
   .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   body { font-size: var(--step-1); line-height: 1.7; }
 }
 
-/* --- Galeria na telefonie: dwa rzędy jadące powoli w bok ------------------
-   Pionowa lista ośmiu kafli zajmowała cztery ekrany. Zamiast tego widać
-   dwa rzędy, a reszta sama nadjeżdża z prawej. Skrypt dokłada komplet
-   kopii, więc `-50%` to dokładnie jeden zestaw — pętla nie ma szwu.
-   Bez JS (brak kopii) pas zostaje zwykłym paskiem przewijanym palcem.     */
-@media (max-width: 47.99rem) {
-  .strip-pas {
-    overflow: hidden;
-    /* Krawędzie rozmywają się, żeby zdjęcia nie były ucinane pionową linią */
-    --maska-pasa: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 5%,
-      rgba(0,0,0,1) 95%, rgba(0,0,0,0) 100%);
-    mask-image: var(--maska-pasa);
-  }
-  .strip-pas[data-galeria-gotowy] .strip {
-    grid-template-columns: none;
-    grid-template-rows: repeat(2, auto);
-    grid-auto-flow: column;
-    grid-auto-columns: 42vw;
-    width: max-content;
-  }
-  /* Własnościami długimi, nie skrótem `animation:` — skrót ustawiłby przy
-     okazji `animation-play-state: running` i przycisk pauzy nie miałby
-     czego zatrzymać (ta sama pułapka co przy chmurach).                  */
-  .js .strip-pas[data-galeria-gotowy] .strip {
-    animation-name: przesuw-galerii;
-    animation-duration: var(--tempo-galerii, 48s);
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-  /* Przesuw staje, gdy zdjęcie jest powiększone — inaczej pas jechałby
-     dalej pod spodem i po zamknięciu kadr byłby w innym miejscu.         */
-  .strip-pas[data-zatrzymany] .strip { animation-play-state: paused; }
+/* --- Galeria: dwa rzędy jadące powoli w bok -------------------------------
+   Na każdej szerokości, nie tylko na telefonie. Czternaście kafli w siatce
+   zajmowałoby kilka ekranów; tutaj widać dwa rzędy, a reszta sama nadjeżdża
+   z prawej. Skrypt dokłada komplet kopii, więc `-50%` to dokładnie jeden
+   zestaw i pętla nie ma szwu.
+
+   Bez JS pas zostaje zwykłą siatką — układ dwurzędowy włącza się dopiero
+   po ustawieniu `data-galeria-gotowy` przez skrypt.                       */
+.strip-pas {
+  overflow: hidden;
+  /* Krawędzie rozmywają się, żeby zdjęcia nie były ucinane pionową linią */
+  --maska-pasa: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 5%,
+    rgba(0,0,0,1) 95%, rgba(0,0,0,0) 100%);
+  mask-image: var(--maska-pasa);
 }
+.strip-pas[data-galeria-gotowy] .strip {
+  grid-template-columns: none;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
+  /* Na telefonie kafel ma ok. 40 % szerokości ekranu, na dużym ekranie
+     zatrzymuje się na 15 rem — inaczej dwa rzędy zajęłyby cały widok. */
+  grid-auto-columns: clamp(9rem, 40vw, 15rem);
+  width: max-content;
+}
+/* Własnościami długimi, nie skrótem `animation:` — skrót ustawiłby przy
+   okazji `animation-play-state: running` i zatrzymanie pasa przy otwartym
+   powiększeniu nie miałoby czego zatrzymać (ta sama pułapka co przy chmurach). */
+.js .strip-pas[data-galeria-gotowy] .strip {
+  animation-name: przesuw-galerii;
+  animation-duration: var(--tempo-galerii, 48s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+/* Przesuw staje, gdy zdjęcie jest powiększone — inaczej pas jechałby
+   dalej pod spodem i po zamknięciu kadr byłby w innym miejscu.         */
+.strip-pas[data-zatrzymany] .strip { animation-play-state: paused; }
 
 /* Kopie istnieją wyłącznie po to, żeby domknąć pętlę przesuwu. Poza nią —
    na dużym ekranie i przy „ogranicz ruch" — nie mogą dołożyć ośmiu kafli
    do siatki, więc domyślnie ich nie ma. */
 .strip > [data-klon-galerii] { display: none; }
-@media (max-width: 47.99rem) {
-  .strip-pas[data-galeria-gotowy] .strip > [data-klon-galerii] { display: block; }
-}
+.strip-pas[data-galeria-gotowy] .strip > [data-klon-galerii] { display: block; }
 
 /* --- Powiększanie zdjęć z galerii ---------------------------------------
    Przycisk dokłada skrypt i leży na całym kaflu. Jest przezroczysty —
@@ -821,13 +837,6 @@ p:last-child { margin-bottom: 0; }
   object-fit: contain;
   border-radius: var(--r-lg, 1rem);
   background: var(--glebia-2);
-}
-.lupa__podpis {
-  margin: 0.75rem 0 0;
-  color: #FFFFFF;
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  text-align: center;
 }
 .lupa__zamknij {
   position: absolute;
@@ -1010,6 +1019,128 @@ p:last-child { margin-bottom: 0; }
 @media (min-width: 40rem) { .pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .pillar b { display: block; font-family: var(--font-display); font-size: 1.125rem; font-weight: 700; color: var(--heading); }
 .pillar span { font-size: 0.9375rem; line-height: 1.55; color: var(--muted); }
+
+/* == 9b. KOLONIE I URODZINY ==============================================
+   Dwie oferty w jednej sekcji. Każda to tekst plus zdjęcia; na dużym
+   ekranie stoją obok siebie, a druga ma odwróconą kolejność, żeby sekcja
+   nie wyglądała jak dwa razy ten sam blok.                                */
+/* Tło tej sekcji schodzi już do #7FCBEC, czyli najciemniejszego błękitu
+   w strefie jasnej. Markowy `--brand-700` dawał tu 3,89:1 na etykiecie
+   i obu odnośnikach — poniżej progu 4,5:1. Przyciemniamy akcent wyłącznie
+   w tej sekcji, zamiast ruszać token używany na całej stronie.            */
+#oferta {
+  --accent: #07496C;
+  --focus: #07496C;
+}
+
+.oferta {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  align-items: start;
+}
+.oferta + .oferta {
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  border-top: 1px solid var(--rule);
+}
+.oferta__tekst > * + * { margin-top: var(--space-5); }
+.oferta__tekst .prose { max-width: 54ch; }
+.oferta__cta { margin: 0; }
+
+.oferta__zdjecia {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.oferta__zdjecia .photo { --ratio: 3 / 4; }
+/* Kadr poziomy w pionowym slocie ucinałby to, co najważniejsze — grupę
+   ludzi. Takie zdjęcie dostaje więc obie kolumny i własne proporcje. */
+.oferta__zdjecia .szeroki { grid-column: 1 / -1; }
+.oferta__zdjecia .szeroki .photo { --ratio: 3 / 2; }
+/* Jedno zdjęcie nie ma z czym tworzyć siatki — zajmuje całą szerokość. */
+.oferta__zdjecia--jedno { grid-template-columns: minmax(0, 1fr); }
+.oferta__zdjecia--jedno .photo { --ratio: 4 / 5; }
+
+/* Kolumna ze zdjęciem, ceną i przyciskiem. */
+.oferta__bok > * + * { margin-top: var(--space-5); }
+
+@media (min-width: 62rem) {
+  .oferta { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); column-gap: clamp(2.5rem, 5vw, 4.5rem); }
+  .oferta--odwrotna .oferta__tekst { order: 2; }
+  .oferta--odwrotna .oferta__zdjecia,
+  .oferta--odwrotna .oferta__bok { order: 1; }
+  /* Zdjęcie idzie górą, nie środkiem: pod nim stoi teraz cennik z przyciskiem,
+     więc kolumna ma czym wypełnić wysokość. */
+  .oferta__bok .oferta__zdjecia--jedno { align-self: start; }
+}
+
+/* Co jest w cenie i ile to kosztuje.
+
+   Bez ramki i bez tła: pudełko odcinało się od reszty strony, bo nigdzie
+   indziej takich nie ma — sekcje trzyma tu kreska i typografia, nie obrys.
+   Rytm buduje więc podtytuł pod cienką linią, dokładnie jak w nagłówkach
+   sekcji.                                                                 */
+.podtytul {
+  margin: 0 0 var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Znacznik rysowany kreską, nie znakiem — nie zależy od kroju pisma
+   i nie jest odczytywany przez czytnik ekranu jako treść.                */
+.wcenie__lista { margin: 0; padding: 0; list-style: none; }
+.wcenie__lista li {
+  position: relative;
+  padding-left: 1.6rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--on-surface);
+}
+.wcenie__lista li::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  top: 0.42em;
+  width: 0.55rem;
+  height: 0.3rem;
+  border-left: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(-45deg);
+}
+@media (min-width: 30rem) {
+  .wcenie__lista { columns: 2; column-gap: var(--space-5); }
+  .wcenie__lista li { break-inside: avoid; }
+}
+
+.ceny__lista { margin: 0; padding: 0; list-style: none; }
+.ceny__lista li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  padding: 0.65rem 0;
+}
+.ceny__lista li + li { border-top: 1px solid var(--rule); }
+.ceny__co { font-size: 0.9375rem; color: var(--muted); }
+.ceny__ile {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--heading);
+  font-variant-numeric: tabular-nums;
+}
 
 /* == 10. KADRA =========================================================== */
 
@@ -1236,6 +1367,16 @@ p:last-child { margin-bottom: 0; }
   background-position: right 0.9rem center;
   background-size: 1.1rem;
 }
+/* Rozwinięta lista `select` jest rysowana przez system, a nie przez stronę:
+   dostaje własne, jasne tło, ale kolor tekstu dziedziczy z pola. W strefie
+   głębi tekst jest biały, więc pozycje robiły się białe na białym —
+   widać było tylko tę pod wskaźnikiem, bo system podmienia jej barwy.
+   Dlatego `option` dostaje własną, jawną parę kolorów.                    */
+.field select option {
+  background-color: #FFFFFF;
+  color: var(--ink);
+}
+
 .field input:hover,
 .field select:hover,
 .field textarea:hover { border-color: var(--sky); }
@@ -1357,9 +1498,17 @@ p:last-child { margin-bottom: 0; }
    (klasa .reveal) — ma wbudowane zabezpieczenie, więc treść nie może
    zostać ukryta na stałe, gdyby animacje nie wystartowały.              */
 
-/* Zdjęcie ożywa pod wskaźnikiem — sygnał „można tu popatrzeć" */
-.photo img { transition: transform 600ms var(--ease-out); }
-.photo:hover img { transform: scale(1.045); }
+/* Zdjęcie ożywa pod wskaźnikiem — sygnał „można tu popatrzeć".
+
+   Tylko tam, gdzie wskaźnik naprawdę istnieje. Na dotyku przeglądarka
+   udaje `:hover` po dotknięciu i zostawia go na ostatnio dotkniętym
+   elemencie. Przy przewijaniu karuzeli palcem stan przeskakiwał z kafla
+   na kafel i każdy z nich puchł o 4,5 % przez 600 ms — bloczki drgały.
+   Kadra miała tę osłonę od początku, ta reguła nie.                     */
+@media (hover: hover) {
+  .photo img { transition: transform 600ms var(--ease-out); }
+  .photo:hover img { transform: scale(1.045); }
+}
 
 /* Pas pełnoekranowy oddycha — bardzo powolny dryf kadru, tak żeby
    zdjęcie żyło jak woda, a nie żeby zwracało na siebie uwagę. */
@@ -1442,6 +1591,13 @@ p:last-child { margin-bottom: 0; }
      zjadał pół ekranu i odsuwał treść. Zdjęcia tych samych zajęć są
      w galerii, więc nic nie przepada. Slajd schudł z 1041 do 599 px.    */
   .class-block__media { display: none; }
+
+  /* Urodziny bez zdjęcia — z tego samego powodu. W jednej kolumnie kadr
+     4:5 zajmował ponad 400 px, a pod nim i tak trzeba przewinąć cennik.
+     Kolonie zdjęcia zachowują: tam obrazki NIOSĄ treść („zdjęcia najlepiej
+     pokazują, jak wyglądają nasze wspólne wakacje”), przy urodzinach
+     konkret jest w cenniku.                                             */
+  .oferta__zdjecia--jedno { display: none; }
 
   /* Slajdy mają wysokość najwyższego z nich, a `align-content: center`
      spychał krótsze opisy w dół — nagłówki startowały na 4, 17, 69 i 87 px
@@ -1815,7 +1971,10 @@ p:last-child { margin-bottom: 0; }
   inset: 0;
   z-index: 2;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.15rem;
   width: 100%;
   padding: 2.5rem 0.9rem 0.85rem;
   border: 0;
@@ -1831,6 +1990,19 @@ p:last-child { margin-bottom: 0; }
 }
 .js .coach__przycisk:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
 .js .coach__przycisk .coach__imie { transition: transform 200ms var(--ease-out); }
+
+/* Podpowiedź, że kafel się otwiera. Nie każdy zgadnie, że zdjęcie jest
+   klikalne — sam obrazek niczego nie obiecuje. `aria-hidden`, bo przycisk
+   ma już ukrytą etykietę „— pokaż opis" dla czytnika ekranu; bez tego
+   ta sama informacja czytana byłaby dwa razy.                            */
+.js .coach__zacheta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  /* Biel na 78 % zamiast osobnego koloru: gradient pod spodem jest ciemny
+     i tak, a jaśniejszy odcień oddzieliłby podpowiedź od nazwiska. */
+  color: rgba(255, 255, 255, 0.78);
+}
 @media (hover: hover) {
   .js .coach__przycisk:hover .coach__imie { transform: translateY(-0.15rem); }
   .js .coach__strona--foto img { transition: transform 500ms var(--ease-out); }

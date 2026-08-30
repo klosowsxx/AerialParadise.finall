@@ -46,6 +46,10 @@ while ($listener.IsListening) {
     if (-not $contentType) { $contentType = "application/octet-stream" }
     $bytes = [System.IO.File]::ReadAllBytes($filePath)
     $response.ContentType = $contentType
+    # Bez tego przeglądarka sama decyduje, jak długo trzymać plik, i po
+    # zmianie w kodzie potrafi serwować starą wersję strony. Przy podglądzie
+    # zawsze chcemy widzieć to, co jest na dysku.
+    $response.Headers.Add("Cache-Control", "no-store, must-revalidate")
     $response.ContentLength64 = $bytes.Length
     $response.OutputStream.Write($bytes, 0, $bytes.Length)
   } else {

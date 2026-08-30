@@ -284,13 +284,40 @@
       return track.getBoundingClientRect().left + parseFloat(getComputedStyle(track).paddingLeft || 0);
     };
 
+    /* Skok bez animacji — używany tylko do cichego powrotu do środkowego
+       kompletu. Samo `behavior: "instant"` nie wystarcza z dwóch powodów:
+
+       1. Starsze Safari tej wartości nie zna i spada na `auto`, czyli na
+          CSS-owe `scroll-behavior: smooth` z `.carousel__track` — „cichy"
+          powrót stawał się widocznym przejazdem taśmy wstecz.
+       2. `scroll-snap-type: x mandatory` po skoku dociąga taśmę do
+          najbliższego punktu i wysyła kolejne zdarzenia przewijania,
+          które znów uruchamiają wyrównanie. Stąd drganie.
+
+       Dlatego na czas skoku wyłączamy jedno i drugie, a potem przywracamy
+       wartości z arkusza (usunięcie własności inline, nie wpisanie na
+       sztywno — inaczej reguła dla „ogranicz ruch" przestałaby działać). */
+    var pomijamScroll = false;
+    var skok = function (delta) {
+      pomijamScroll = true;
+      track.style.scrollSnapType = "none";
+      track.style.scrollBehavior = "auto";
+      track.scrollLeft += delta;
+      void track.offsetWidth;   // przeliczenie, zanim snapowanie wróci
+      track.style.removeProperty("scroll-snap-type");
+      track.style.removeProperty("scroll-behavior");
+      // Zdarzenie przewijania po naszym własnym skoku przychodzi dopiero
+      // w następnej klatce — flagę zdejmujemy z zapasem.
+      window.setTimeout(function () { pomijamScroll = false; }, 120);
+    };
+
     var przesun = function (docelowy, natychmiast) {
       var delta = slides[docelowy].getBoundingClientRect().left - lewaWnetrza();
       if (!delta) { return; }
+      if (natychmiast) { skok(delta); return; }
       // Bez pola "behavior" decyduje CSS — a tam reguła prefers-reduced-motion
       // przełącza przewijanie na natychmiastowe.
-      if (natychmiast) { track.scrollBy({ left: delta, behavior: "instant" }); }
-      else { track.scrollBy({ left: delta }); }
+      track.scrollBy({ left: delta });
     };
 
     // Cichy powrót do środkowego kompletu. Wykonywany dopiero po zatrzymaniu
@@ -343,15 +370,44 @@
     // naprawdę stanie. Zwykły ogranicznik częstotliwości przerywałby
     // animację w połowie i przejście szarpało.
     var timer = null;
-    track.addEventListener("scroll", function () {
+
+    // Dopóki palec dotyka taśmy, nie przestawiamy niczego. Przewijanie na
+    // telefonie ma bezwład: zdarzenia potrafią się urwać na dłużej niż
+    // 160 ms jeszcze przed puszczeniem, a skok wykonany pod palcem to
+    // najbardziej widoczny rodzaj szarpnięcia. Po puszczeniu liczymy od nowa.
+    var palecNaTasmie = false;
+
+    var zaplanujWyrownanie = function () {
       window.clearTimeout(timer);
       timer = window.setTimeout(function () {
         timer = null;
+        if (palecNaTasmie) { return; }
         fizyczny = zeScrolla();
         render();
         wyrownaj();
       }, 160);
+    };
+
+    track.addEventListener("scroll", function () {
+      if (pomijamScroll) { return; }
+      zaplanujWyrownanie();
     }, { passive: true });
+
+    track.addEventListener("pointerdown", function () {
+      palecNaTasmie = true;
+      window.clearTimeout(timer);
+    }, { passive: true });
+
+    // Puszczenie łapiemy na oknie, nie na torze: palec często wyjeżdża poza
+    // taśmę i `pointerup` trafiłby w inny element. Wtedy flaga zostałaby
+    // podniesiona na zawsze i pętla przestałaby się domykać.
+    var puszczone = function () {
+      if (!palecNaTasmie) { return; }
+      palecNaTasmie = false;
+      zaplanujWyrownanie();
+    };
+    window.addEventListener("pointerup", puszczone, { passive: true });
+    window.addEventListener("pointercancel", puszczone, { passive: true });
 
     window.addEventListener("resize", function () { render(); }, { passive: true });
 
@@ -457,12 +513,28 @@
         headers: { "Accept": "application/json" },
         body: new FormData(form)
       }).then(function (response) {
-        if (!response.ok) { throw new Error(String(response.status)); }
+        if (!response.ok) { throw new Error("HTTP " + response.status); }
+        // Sam kod 200 NIE oznacza, że wiadomość poszła. FormSubmit odpowiada
+        // dwusetką również wtedy, gdy jej nie wysłał — dopóki skrzynka nie
+        // potwierdzi formularza linkiem aktywacyjnym, a także przy blokadach
+        // i limitach. Powód siedzi w treści odpowiedzi: `success: "false"`.
+        // Bez tego sprawdzenia strona mówiła „wiadomość dotarła", kiedy nic
+        // nie dotarło — a odwiedzający czekałby na odpowiedź, której nie ma.
+        return response.json().catch(function () { return null; });
+      }).then(function (dane) {
+        if (dane && String(dane.success) === "false") {
+          throw new Error(dane.message || "usługa odrzuciła wiadomość");
+        }
         form.reset();
         Array.prototype.forEach.call(controls, clearError);
         submitBtn.disabled = false;
         say("ok", "Dziękujemy, wiadomość dotarła. Odpiszemy w godzinach kontaktu: pon.–pt. 16:00–21:00, sob. 10:00–13:00.");
-      }).catch(function () {
+      }).catch(function (blad) {
+        // Powód trafia do konsoli — odwiedzającemu nic nie mówi, a przy
+        // wdrożeniu pozwala odróżnić brak aktywacji od awarii sieci.
+        if (window.console && window.console.warn) {
+          window.console.warn("Formularz kontaktowy — wysyłka nieudana:", blad && blad.message);
+        }
         submitBtn.disabled = false;
         say("error", "Nie udało się wysłać wiadomości. Spróbuj ponownie albo napisz na aerialparadiseclub@gmail.com.");
       });
@@ -543,7 +615,6 @@
 
   if (lupa && kafleGalerii.length && typeof lupa.showModal === "function") {
     var lupaFoto = lupa.querySelector("[data-lupa-foto]");
-    var lupaPodpis = lupa.querySelector("[data-lupa-podpis]");
     var lupaZamknij = lupa.querySelector("[data-lupa-zamknij]");
     var pasDoZatrzymania = document.querySelector("[data-galeria]");
     var wracaDo = null;
@@ -564,12 +635,10 @@
 
     var otworzLupe = function (kafel, zrodloFokusu) {
       var foto = kafel.querySelector("img");
-      var etykieta = kafel.querySelector(".photo__label");
       if (!foto) { return; }
 
       lupaFoto.src = foto.currentSrc || foto.src;
       lupaFoto.alt = foto.getAttribute("alt") || "";
-      lupaPodpis.textContent = etykieta ? etykieta.textContent.trim() : "";
       wracaDo = zrodloFokusu;
 
       // Pas jedzie dalej pod spodem, więc po zamknięciu kadr byłby gdzie
@@ -579,8 +648,28 @@
       lupa.showModal();
     };
 
+    /* Sprzątanie po zamknięciu. Wywoływane z kilku miejsc i odporne na
+       powtórzenie, bo nie da się polegać na jednym zdarzeniu: `close`
+       na <dialog> bywa w osadzonych przeglądarkach w ogóle nieodpalane
+       (sprawdzone — własny nasłuch łapał zero zdarzeń mimo zamknięcia
+       okna). Gdyby zostało samo `close`, pas galerii zostawał zatrzymany
+       na zawsze, a tło zablokowane.                                      */
+    var posprzataj = function () {
+      document.body.classList.remove("is-locked");
+      if (pasDoZatrzymania) { pasDoZatrzymania.removeAttribute("data-zatrzymany"); }
+      lupaFoto.removeAttribute("src");
+      // Fokus wraca na zdjęcie, z którego przyszliśmy — inaczej wylądowałby
+      // na początku strony. Kopie pasa są poza tabulatorem, więc dla nich
+      // po prostu nic nie robimy.
+      if (wracaDo && wracaDo.isConnected && wracaDo.tabIndex >= 0) {
+        wracaDo.focus({ preventScroll: true });
+      }
+      wracaDo = null;
+    };
+
     var zamknijLupe = function () {
       if (lupa.open) { lupa.close(); }
+      posprzataj();
     };
 
     document.addEventListener("click", function (event) {
@@ -597,19 +686,14 @@
       if (event.target === lupa) { zamknijLupe(); }
     });
 
-    // `close` łapie też zamknięcie klawiszem Esc, które <dialog> robi sam.
-    lupa.addEventListener("close", function () {
-      document.body.classList.remove("is-locked");
-      if (pasDoZatrzymania) { pasDoZatrzymania.removeAttribute("data-zatrzymany"); }
-      lupaFoto.removeAttribute("src");
-      // Fokus wraca na zdjęcie, z którego przyszliśmy — inaczej wylądowałby
-      // na początku strony. Kopie pasa są poza tabulatorem, więc dla nich
-      // cofamy się do pierwszego oryginału.
-      if (wracaDo && wracaDo.isConnected && wracaDo.tabIndex >= 0) {
-        wracaDo.focus({ preventScroll: true });
-      }
-      wracaDo = null;
+    // Esc zamyka <dialog> sam. `cancel` leci PRZED zamknięciem, więc
+    // sprzątamy w następnym takcie, kiedy okno jest już zamknięte.
+    lupa.addEventListener("cancel", function () {
+      window.setTimeout(posprzataj, 0);
     });
+
+    // Trzecia ścieżka na wypadek zamknięcia okna w inny sposób.
+    lupa.addEventListener("close", posprzataj);
   }
 
   /* --- Galeria na telefonie: dwa rzędy jadące w bok ----------------------
@@ -626,7 +710,6 @@
 
   if (pasGalerii) {
     var torGalerii = pasGalerii.querySelector("[data-galeria-tor]");
-    var malyEkran = window.matchMedia("(max-width: 47.99rem)");
     var bezRuchu = window.matchMedia("(prefers-reduced-motion: reduce)");
     var kopieGotowe = false;
 
@@ -649,8 +732,16 @@
         // a fokus nie może wejść w gałąź ukrytą przed czytnikiem ekranu.
         var lupaKopii = kopia.querySelector(".photo__lupa");
         if (lupaKopii) { lupaKopii.setAttribute("tabindex", "-1"); }
+
+        // Kopia dziedziczy `data-slot-gotowy`, przez co `wyposazSloty` by ją
+        // pominęło — nasłuch wczytania nigdy by nie powstał i **ramka
+        // zastępcza zostałaby narysowana na wierzchu wczytanego zdjęcia**.
+        // Kasujemy więc cały stan slotu i pozwalamy rozpoznać go od nowa.
+        kopia.removeAttribute("data-slot-gotowy");
+        kopia.classList.remove("is-loaded", "is-empty");
         torGalerii.appendChild(kopia);
       });
+      wyposazSloty(torGalerii);
       kopieGotowe = true;
     };
 
@@ -674,15 +765,20 @@
     };
 
     var przelicz = function () {
-      if (malyEkran.matches && !bezRuchu.matches) { wlacz(); } else { wylacz(); }
+      if (bezRuchu.matches) { wylacz(); } else { wlacz(); }
     };
 
     przelicz();
-    malyEkran.addEventListener("change", przelicz);
     bezRuchu.addEventListener("change", przelicz);
+    // Tylko przy zmianie SZEROKOŚCI. Na telefonie chowanie się paska adresu
+    // wywołuje `resize` co chwilę, a przeliczanie tempa przy niezmienionej
+    // szerokości nic nie wnosi.
+    var ostatniaSzerokosc = window.innerWidth;
     window.addEventListener("resize", function () {
+      if (window.innerWidth === ostatniaSzerokosc) { return; }
+      ostatniaSzerokosc = window.innerWidth;
       if (pasGalerii.hasAttribute("data-galeria-gotowy")) { ustawTempo(); }
-    });
+    }, { passive: true });
   }
 
   /* --- Rok w stopce ----------------------------------------------------- */

@@ -27,7 +27,8 @@ np. `-Port 5900` (tak jest ustawiony podgląd w `.claude/launch.json`).
 ## Sekcje i kotwice
 
 `#gora` (hero) → `#o-nas` → `#zajecia` (w środku `#szarfy`, `#kolo`,
-`#akrobatyka`, `#stretching`) → `#galeria` → `#kadra` → `#lokalizacje` →
+`#akrobatyka`, `#stretching`) → `#oferta` (w środku `#kolonie`, `#urodziny`)
+→ `#galeria` → `#kadra` → `#lokalizacje` →
 `#opinie` → `#formularz` → `#kontakt`.
 
 Menu w górnym pasku, menu mobilne i stopka trzymają dokładnie tę kolejność.
@@ -57,6 +58,30 @@ miejscu stoi dokładnie ta sama treść.
 Kluczowe jest **odczekanie na koniec przewijania**, a nie zwykły ogranicznik
 częstotliwości: powrót wykonany w połowie animacji ucinałby ją i przejście
 szarpało. Odliczanie 160 ms startuje od nowa przy każdym zdarzeniu przewijania.
+
+**Trzy warunki, bez których ten powrót drga na telefonie** (wszystkie
+wyszły dopiero na prawdziwym urządzeniu):
+
+- **Nie wolno przestawiać taśmy, dopóki palec jej dotyka.** Przewijanie
+  dotykiem ma bezwład i zdarzenia potrafią się urwać na dłużej niż 160 ms
+  jeszcze przed puszczeniem. Flagę zdejmuje `pointerup` **na oknie**, nie
+  na torze — palec często wyjeżdża poza taśmę i zdarzenie trafiłoby w inny
+  element, przez co pętla przestałaby się domykać na dobre.
+- **Skok musi naprawdę być natychmiastowy.** Samo `behavior: "instant"`
+  nie wystarcza: starsze Safari tej wartości nie zna i spada na `auto`,
+  czyli na CSS-owe `scroll-behavior: smooth` z `.carousel__track` — cichy
+  powrót stawał się widocznym przejazdem taśmy wstecz. Na czas skoku
+  ustawiamy `scroll-behavior: auto` własnością inline i po wszystkim ją
+  **usuwamy** (`removeProperty`), a nie nadpisujemy na sztywno — inaczej
+  reguła dla „ogranicz ruch" przestałaby działać.
+- **Snapowanie trzeba wyłączyć na czas skoku.** `scroll-snap-type: x
+  mandatory` po skoku dociąga taśmę do najbliższego punktu i wysyła kolejne
+  zdarzenia przewijania, które znów uruchamiają wyrównanie — to była
+  pętla drgania. Zdarzenie po własnym skoku pomijamy też flagą (120 ms).
+
+Zmierzone po poprawce: skok o cały komplet wraca w jednym kroku i pozycja
+jest stabilna przez kolejną sekundę (7 próbek co 120 ms, zero odbić) —
+w obu karuzelach.
 
 Kopie są niewidoczne dla technologii wspomagających: mają `aria-hidden`,
 a wszystkie ich odnośniki i przyciski `tabindex="-1"`. Skrypt zdejmuje im też
@@ -143,6 +168,78 @@ wewnątrz `carousel__track`. Pilnuj, żeby `aria-controls` przycisku i `id`
 strony z opisem miały tę samą, niepowtarzalną wartość. Licznik i zapętlenie
 karuzeli dostosują się same.
 
+## Kolonie i urodziny
+
+Obie oferty siedzą w **jednej sekcji** (`#oferta`), a nie w dwóch. Osobne
+sekcje wydłużyłyby i tak długą stronę o dwa pełne ekrany, a jedna i druga
+odpowiada na to samo pytanie rodzica: „co jeszcze robicie poza cotygodniowymi
+zajęciami". Wewnątrz są dwa bloki z własnymi kotwicami — `#kolonie`
+i `#urodziny` — więc menu mobilne prowadzi prosto do każdego z osobna.
+
+Drugi blok ma `.oferta--odwrotna`: od 992 px zdjęcie idzie na lewo, a tekst
+na prawo. Bez tego sekcja wyglądałaby jak ten sam blok postawiony dwa razy.
+
+**Gradient musiał dostać nowy przystanek.** Sekcje dzielą barwę na styku,
+więc wstawienie czegokolwiek w środek łańcucha rozjeżdża zejście barw.
+Doszedł token `--niebo-4` (`#93D3F0`, w połowie drogi między `--niebo-3`
+a `--powierzchnia`): „Zajęcia" kończą się teraz na nim, a nowa sekcja
+prowadzi z niego do `--powierzchnia`. Przy każdej kolejnej wstawce trzeba
+zrobić to samo — sprawdzianem jest porównanie koloru końcowego każdej
+sekcji z początkowym następnej.
+
+**Akcent w tej sekcji jest ciemniejszy niż na reszcie strony.** Tło schodzi
+tu do `#7FCBEC`, czyli najciemniejszego błękitu w strefie jasnej, i markowy
+`--brand-700` dawał na etykiecie oraz obu odnośnikach **3,89:1** — poniżej
+progu. `#oferta` nadpisuje więc `--accent` i `--focus` na `#07496C`
+(5,4:1 w najgorszym miejscu), zamiast ruszać token używany wszędzie indziej.
+
+**Cennik urodzin nie ma ramki ani tła** — pierwsza wersja miała je i odcinała
+się od reszty strony, bo nigdzie indziej takich pudełek nie ma; rytm trzyma
+tu kreska i typografia, nie obrys. Zostały więc dwa podtytuły pod cienką
+linią (`.podtytul`), lista „w cenie" łamana na dwie kolumny od 480 px
+i dwa wiersze cennika rozdzielone hairline'em, z kwotą w kroju nagłówkowym.
+Znacznik przy liście jest **rysowany obróconą kreską**, nie znakiem „✓" —
+nie zależy od kroju pisma i czytnik ekranu nie odczyta go jako treści.
+
+**Opisy obu ofert są przeklejone dosłownie z materiałów klienta**
+(`kolonie.txt`, `oferta urodzinowa.txt`) — nie skracać ani nie przeredagowywać.
+To samo dotyczy nagłówków: „Kolonie i półkolonie AerialParadise" oraz
+„Urodziny w AerialParadise".
+
+Zdjęcia przy koloniach: `kolonie-1.jpg` **poziome, na obie kolumny**
+(klasa `.szeroki`, kadr 3:2, 1200 × 800) i pod nim dwa pionowe —
+`kolonie-3.jpg`, `kolonie-4.jpg` (3:4, 900 × 1200). Kadr poziomy w pionowym
+slocie ucinałby to, co najważniejsze: grupę ludzi. Dlatego takie zdjęcie
+dostaje obie kolumny i własne proporcje, zamiast być przycinane.
+
+Przy urodzinach `urodziny.jpg` (4:5, 960 × 1200) — zdjęcie z prawdziwej
+imprezy w sali (girlanda, balony, stół), a nie ilustracja z zajęć. Blok urodzin ma **kolumnę „handlową"** (`.oferta__bok`): zdjęcie górą,
+pod nim cennik i przycisk. Wcześniej zdjęcie było wyśrodkowane w pionie,
+a cennik siedział w kolumnie z opisem — pod zdjęciem zostawało 400 px
+pustki, a tekst obok niepotrzebnie się wydłużał. Po przeniesieniu blok
+zeszedł z 979 do 915 px na desktopie. Na telefonie kolejność to opis,
+zdjęcie, cennik, przycisk — cena tuż przed wezwaniem do działania.
+
+**Górny pasek ma pełne „Kolonie i urodziny", ale menu poziome pokazuje się
+dopiero od 1120 px** (wcześniej od 992 px). Siedem pozycji z tą nazwą
+potrzebuje 740 px; z logotypem (176 px) i przyciskiem zapisów (108 px) daje
+to 1056 px, a przy 992 px pasek ma 977 px. Poniżej 1120 px nawigację
+przejmuje menu pod hamburgerem — bogatsze, z rozbiciem zajęć i obu ofert
+na osobne pozycje.
+
+**Flexbox nie zgłasza takiego braku miejsca jako przepełnienia.** Ściskał
+logotyp do 44 px, a napis „AerialParadise" wychodził poza jego ramkę
+i wjeżdżał pod pozycję „O nas" — wyglądało to, jakby menu nachodziło na
+logo. Stąd `.brand { flex: none }`: lepiej, żeby zabrakło miejsca widocznie,
+niż żeby elementy po cichu na siebie nachodziły.
+
+Druga pułapka z tej samej rodziny: pozycje menu kurczyły się poniżej własnej
+treści i tekst łamał się w środku. Naprawia to `white-space: nowrap` na
+`.nav__link`.
+
+**Dodając kolejną pozycję do paska, zmierz odstęp logo↔menu, nie tylko
+menu↔przycisk** — po tej stronie pęka najpierw i najciszej.
+
 ## Opinie
 
 Sekcja `#opinie` ma trzy karty i przycisk do wizytówki Google. Wszystkie trzy
@@ -171,7 +268,33 @@ Zasady, które trzymają tę sekcję wiarygodną:
 
 Formularz jest na samym dole strony (`#formularz`) i działa w dwóch trybach:
 
-**Teraz (bez żadnej konfiguracji)** — po wysłaniu otwiera program pocztowy
+**Stan na 30.08.2026:** formularz jest podpięty pod FormSubmit na skrzynkę
+klubu `aerialparadiseclub@gmail.com`. **Aktywacja jeszcze nie przeszła** —
+dopóki ktoś nie kliknie linku „Activate Form" w mailu od FormSubmit, usługa
+odrzuca wszystkie zgłoszenia (strona pokazuje wtedy czerwony komunikat).
+Link przychodzi dopiero po pierwszym wysłaniu formularza i musi go kliknąć
+właściciel skrzynki, czyli Justyna.
+
+Po aktywacji FormSubmit wyda **identyfikator zastępczy** — warto go wstawić
+zamiast gołego adresu, żeby skrzynki nie zbierały roboty spamowe. Adres
+klubu i tak widnieje na stronie w kontakcie, więc to poprawa, nie warunek.
+
+**Aktywacja jest przypisana do adresu strony.** Mail potwierdzający mówi
+wprost o `http://localhost:5900/`, bo stamtąd poszło pierwsze żądanie. Po
+przeniesieniu strony na docelową domenę trzeba się liczyć z ponowną
+aktywacją — sprawdzić to od razu po wdrożeniu, jednym testowym wysłaniem,
+a nie dopiero wtedy, gdy zapytania zaczną ginąć.
+
+**Kod 200 nie znaczy, że wiadomość poszła.** FormSubmit odpowiada dwusetką
+także wtedy, gdy jej nie wysłał — dopóki skrzynka nie potwierdzi formularza
+linkiem aktywacyjnym, a także przy blokadach i limitach. Powód siedzi
+w treści odpowiedzi (`success: "false"`, `message`). Skrypt sprawdza jedno
+i drugie; przy niepowodzeniu **nie czyści pól**, żeby odwiedzający nie
+stracił napisanej wiadomości, a powód wypisuje do konsoli. Gdyby kiedyś
+zostało samo `response.ok`, strona wróciłaby do mówienia „wiadomość
+dotarła" wtedy, gdy nic nie dotarło.
+
+**Wariant bez żadnej konfiguracji** (pusty `data-endpoint`) — otwiera program pocztowy
 odwiedzającego z gotową, wypełnioną wiadomością do
 `aerialparadiseclub@gmail.com`. Nic nie trzeba zakładać, ale wymaga to od
 odwiedzającego skonfigurowanej poczty na urządzeniu.
@@ -307,6 +430,7 @@ się kilka rzeczy:
 | Sekcja „O nas" | mieści się w jednym ekranie (ok. 0,9 wysokości) | po kliknięciu w menu widać całą treść bez przewijania |
 | Zdjęcie sali w „O nas" | ukryte | zdjęć jest na stronie dużo; tutaj liczy się tekst |
 | Galeria | dwa rzędy jadące powoli w bok | osiem kafli w pionie zajmowało cztery ekrany; teraz 432 px |
+| Zdjęcie w „Urodzinach" | ukryte | kadr 4:5 zajmował ponad 400 px, a konkret jest w cenniku; blok schudł z 1560 do 1141 px |
 | Zdjęcia w „Zajęciach" | ukryte | kadr zjadał pół ekranu i odsuwał opis; te same zdjęcia są w galerii. Slajd schudł z 1041 do 599 px |
 | Nagłówki slajdów „Zajęć" | wyrównane do góry | slajdy mają wysokość najwyższego z nich, a `align-content: center` spychał krótsze opisy w dół — tytuł skakał o 83 px przy przewijaniu |
 | Kadry zdjęć | sale 2:1, portret 11 rem | pionowe kadry zjadały pół ekranu |
@@ -318,16 +442,45 @@ się kilka rzeczy:
 Efekt: 11,9 ekranu przewijania przy 375 px i 13,8 przy 320 px — przy ośmiu
 zdjęciach w galerii, pasie pełnoekranowym i całej treści.
 
+### Efekty `:hover` a dotyk
+
+Każdy efekt pod wskaźnikiem musi siedzieć w `@media (hover: hover)`.
+Na dotyku przeglądarka udaje `:hover` po dotknięciu i **zostawia go** na
+ostatnio dotkniętym elemencie. Przy przewijaniu karuzeli palcem stan
+przeskakiwał z kafla na kafel i każde zdjęcie puchło o 4,5 % przez 600 ms
+— bloczki w „Kadrze" i „Zajęciach" wyglądały, jakby drgały.
+
+Efekty samej „Kadry" miały tę osłonę od początku; brakowało jej ogólnej
+regule `.photo:hover img`, która obejmuje wszystkie zdjęcia na stronie.
+
 ### Galeria: przesuwający się pas i powiększanie
 
-**Na telefonie** (poniżej 768 px) pas zamienia się w **dwa rzędy jadące
-powoli w prawo**. Ta sama metoda co w karuzelach: skrypt dokłada komplet
+**Na każdej szerokości** (nie tylko na telefonie) pas to **dwa rzędy jadące
+powoli w prawo** — zdjęć jest 14, więc siatka zajęłaby kilka ekranów.
+Szerokość kafla to `clamp(9rem, 40vw, 15rem)`: 144–150 px na telefonie,
+240 px na dużym ekranie. Ta sama metoda co w karuzelach: skrypt dokłada komplet
 kopii, więc `translateX(-50%)` przesuwa taśmę dokładnie o jeden zestaw
 i wraca do kadru identycznego z początkowym — pętla nie ma szwu.
+
+**Sprzątanie po zamknięciu powiększenia nie może wisieć na zdarzeniu
+`close`.** W osadzonych przeglądarkach `<dialog>` potrafi go w ogóle nie
+wysłać — sprawdzone pomiarem: własny nasłuch łapał zero zdarzeń mimo
+zamkniętego okna, przez co pas galerii zostawał zatrzymany na zawsze,
+a tło zablokowane. Dlatego sprzątanie siedzi w osobnej funkcji wołanej
+z trzech miejsc (przycisk, kliknięcie w tło, `cancel` od Esc) i jest
+odporne na powtórzenie.
 
 Prędkość jest stała w pikselach, nie w czasie: skrypt liczy `--tempo-galerii`
 z szerokości jednego zestawu przy 18 px/s (przy 375 px wychodzi 37 s). Bez
 tego na szerszym telefonie pas jechałby zauważalnie szybciej.
+
+**Kopie muszą mieć skasowany `data-slot-gotowy`.** Ten znacznik pilnuje, żeby
+ramka zastępcza nie była zakładana dwa razy — ale kopia dziedziczy go razem
+z resztą atrybutów, przez co `wyposazSloty` ją pomijało. Kopia nie dostawała
+nasłuchu wczytania i **ramka zastępcza zostawała narysowana na wierzchu
+wczytanego zdjęcia**: widać było zdjęcie, a na nim podpis i nazwę pliku.
+Dlatego przy klonowaniu kasujemy `data-slot-gotowy` oraz klasy `is-loaded`
+i `is-empty`, a po wstawieniu kopii wołamy `wyposazSloty` jeszcze raz.
 
 Kopie mają `aria-hidden`, a ich przyciski `tabindex="-1"` — fokus nie może
 wejść w gałąź ukrytą przed czytnikiem ekranu. Poza pasem (duży ekran,
