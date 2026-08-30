@@ -1,0 +1,13 @@
+Tu wgraj portrety trenerek (pionowe, proporcje 4:5, dłuższy bok ok. 1600 px):
+
+  justyna-moczulska.jpg
+  agnieszka-polak.jpg
+  monika-koziol.jpg
+  zofia-klak.jpg
+  weronika-joachimiak.jpg
+  weronika-koslinska.jpg
+  marlena-pikor-leczowicz.jpg
+  katarzyna-kosiorek.jpg
+
+Nazwy muszą się zgadzać co do znaku. Po wgraniu pliku ramka z opisem
+znika sama - nie trzeba nic zmieniać w kodzie.
