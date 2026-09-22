@@ -21,6 +21,9 @@ np. `-Port 5900` (tak jest ustawiony podgląd w `.claude/launch.json`).
 | `css/style.css` | Arkusz stylów (tokeny kolorów i typografii w sekcji `:root` na górze) |
 | `js/main.js` | Menu mobilne, wejścia sekcji, karuzela, okno kadry, formularz |
 | `img/` | Logo, favicony, zdjęcia |
+| `robots.txt` | Zgoda dla wyszukiwarek + wskazanie mapy strony |
+| `sitemap.xml` | Mapa strony (jeden adres — strona jest jednostronicowa) |
+| `.vercelignore` | Lista plików, których Vercel **nie** wgrywa na produkcję |
 | `serve.ps1` | Prosty serwer statyczny do podglądu |
 | `.claude/launch.json` | Konfiguracja podglądu (port 5900) |
 
@@ -129,6 +132,8 @@ toru plus liczenie pozycji od jego wnętrza.
 
 Karta ma dwie „strony" leżące w tym samym miejscu: **zdjęcie** i **opis**.
 Kliknięcie zdjęcia przenika do opisu, przycisk „Pokaż zdjęcie" wraca.
+Na zdjęciu, pod nazwiskiem (18 px), stoi podpowiedź „Kliknij, aby zobaczyć
+opis" — 15 px, bo w 12 px ginęła na tle zdjęcia (zmienione 22.09.2026).
 Widoczne jest zawsze tylko jedno; strona schowana dostaje `visibility: hidden`,
 więc znika też dla czytnika ekranu i nie da się na nią wejść tabulatorem.
 
@@ -141,6 +146,13 @@ wysokość. Skutek uboczny: im węższy ekran, tym wyższa i węższa karta.
 | 1280 px | 416 × 541 | 0,77 (blisko 4:5) |
 | 375 px | 335 × 471 | 0,71 (blisko 2:3) |
 | 320 px | 280 × 568 | 0,49 |
+
+Pułapka: w sekcji mobilnej (do 768 px) leży stara reguła `.coach .photo
+{ max-width: 11rem }` — kadr dla układu bez JavaScriptu, gdzie zdjęcie stoi
+obok tekstu. Przy karcie z przełączaniem obcinała zdjęcie do połowy kafelka,
+więc `.js .coach__strona--foto .photo` kasuje ją przez `max-width: none`
+(poprawione 22.09.2026). Jeśli kiedyś zdjęcie znów zajmie pół karty na
+telefonie, zacznij od tej pary reguł.
 
 Poniżej 416 px opis schodzi z 14 na 13 px — bez tego karta przy 320 px miałaby
 proporcję 0,42, czyli wąski pasek. Zdjęcia są kadrowane `object-fit: cover`
@@ -310,6 +322,60 @@ i wklej otrzymany adres w atrybut `data-endpoint` w `index.html`:
 
 To wszystko — skrypt sam przełączy się na wysyłkę w tle i pokaże potwierdzenie
 na stronie. Adres e-mail klubu zostaje wtedy po stronie usługi, nie w kodzie.
+
+## Portrety trenerek (22.09.2026)
+
+Sesja studyjna na niebieskim tle, oryginały 1867×2800 (2:3), bez znacznika
+obrotu EXIF. Na stronie ramka jest 4:5, więc każdy portret jest przycięty
+do 1867×2334 i przeskalowany do **800×1000**, jakość JPEG 86.
+
+Kadr schodzi **26 % nadmiaru od góry, resztę z dołu** — twarze w tej sesji
+siedzą w górnej jednej trzeciej kadru, więc równy kadr z obu stron obcinałby
+głowy. Przy dokładaniu kolejnych portretów z tej samej sesji trzymaj tę samą
+proporcję, inaczej jeden kafelek odstaje od reszty.
+
+Przypisania zdjęć do nazwisk podała Justyna (wiadomość z 22.09.2026 —
+same numery plików, bez nazwisk w EXIF, więc nie da się ich odtworzyć
+z samych zdjęć):
+
+| Plik na stronie | Oryginał | Uwagi |
+|---|---|---|
+| `justyna-moczulska.jpg` | DSC04147 | |
+| `agnieszka-polak.jpg` | DSC04261 | |
+| `monika-ochmanska.jpg` | DSC04242 | |
+| `zofia-klak.jpg` | DSC04280 | |
+| `weronika-joachimiak.jpg` | DSC04187 | |
+| `weronika-koslinska.jpg` | DSC04194 | alternatywa DSC04283 — szpagat stojący, kadr 4:5 ucinałby uniesioną nogę |
+| `katarzyna-kosiorek.jpg` | DSC04170 | alternatywa DSC04270 — z szarfą, ale postać poza osią i lekko prześwietlona |
+| `marlena-pikor-leczowicz.jpg` | DSC04162 | **ustalone przez eliminację, nie z listy Justyny — wymaga potwierdzenia** |
+
+Przy dwóch osobach Justyna zostawiła wybór. W obu przypadkach wygrało ujęcie
+portretowe, bo kafelki stoją obok siebie w karuzeli i każde odstępstwo
+od wspólnego kadru rzuca się w oczy.
+
+### Skąd wzięło się zdjęcie Marleny
+
+Na liście Justyny jej nie było. Zdjęcia nie mają nazwisk w metadanych, więc
+nie da się tego odczytać z pliku. Ustalenie poszło przez eliminację:
+
+1. W sesji występuje **dokładnie osiem osób**, każda sfotografowana w dwóch
+   ustawieniach — na samym tle i z przyrządem (szarfa albo koło).
+2. Siedem z nich ma potwierdzone przypisanie od Justyny.
+3. Zostaje jedna: blondynka ze związanymi włosami, niebieską gumką
+   i koralową szminką — klatki **04160, 04162** (na tle) oraz
+   **04253–04256** (z szarfą). Porównanie twarzy potwierdziło, że to ta sama
+   osoba i że nie jest żadną z siedmiu pozostałych.
+
+Po drodze wyjaśniły się dwie mylące grupy: **04154–04156 to Agnieszka**
+(te same rysy co na 04261–63 z szarfą), **04176–04179 to Monika**,
+a **04173/04174 to Kasia**, nie osobna osoba.
+
+Wniosek jest poprawny, o ile w sesji byli wyłącznie trenerzy klubu i Marlena
+w niej uczestniczyła. Tego z samych zdjęć nie da się sprawdzić — **niech
+Justyna rzuci okiem, zanim strona pójdzie w świat.** Podmiana to jedna
+komenda, opisana wyżej.
+
+Oryginały leżą w `C:\Users\marcel\Desktop\trenerki` (45 plików z sesji).
 
 ## Zdjęcia
 
@@ -600,7 +666,8 @@ jest ciągłe, a przewijanie nic nie przelicza:
 |---|---|---|
 | `#gora` | `--niebo-1` | `--niebo-2` |
 | `#o-nas` | `--niebo-2` | `--niebo-3` |
-| `#zajecia` | `--niebo-3` | `--powierzchnia` |
+| `#zajecia` | `--niebo-3` | `--niebo-4` |
+| `#oferta` | `--niebo-4` | `--powierzchnia` |
 | `#galeria` | `--powierzchnia` | `--woda-1` |
 | `#kadra` | `--woda-1` | `--woda-2` |
 | `#lokalizacje` | `--woda-2` | `--woda-3` |
@@ -610,6 +677,37 @@ jest ciągłe, a przewijanie nic nie przelicza:
 
 **Chcesz przesunąć moment zanurzenia?** Zmień barwy na styku dwóch sekcji —
 reszta gradientu dopasuje się sama, bo sąsiedzi zawsze biorą tę samą wartość.
+
+### Wynurzenie z chmury (01.09.2026)
+
+Strona zaczyna się **czystą bielą i pustym niebem** — założenie jest takie,
+że jesteśmy w środku chmury, więc nie ma czego rysować. Dopiero w miarę
+schodzenia niżej wynurzamy się: tło błękitnieje, a chmury się pojawiają.
+
+| Sekcja | Tło | Chmur | Krycie |
+|---|---|---|---|
+| `#gora` | `#FFFFFF → #F4FBFE` | **0** | — |
+| `#o-nas` | `#F4FBFE → #DFF2FC` | 9 | 0.30–0.80 |
+| `#zajecia` | `#DFF2FC → #A8DCF4` | 15 | 0.56–0.92 |
+| `#oferta` | `#A8DCF4 → #7FCBEC` | 6 | 0.30–0.60 |
+
+Krycie w „O nas" **celowo rośnie razem z `top`** — to ono niesie efekt
+wynurzania: górne chmury toną w bieli tła, dolne mają już pełną bryłę.
+To jedyny parametr chmur, który wolno powiązać z wysokością; fazy ruchu
+nadal muszą być przetasowane (patrz niżej).
+
+**Dwie pułapki, na które trzeba uważać przy zmianie palety:**
+
+1. **Biała chmura na białym niebie znika.** Dlatego `.chmura` ma
+   `filter: blur(7px) drop-shadow(…)` — miękki błękitny cień daje jej bryłę
+   tam, gdzie tło jest jasne. `drop-shadow` musi iść **po** `blur`, bo tylko
+   wtedy obrysowuje całą sylwetkę razem z kłębami z `box-shadow`
+   i pseudoelementów; `box-shadow` objąłby samą główną elipsę.
+2. **Nagłówek i rozmycie hero mają barwy wpisane na sztywno**
+   (`rgba(255,255,255,…)` w `.site-header`, `.site-header.is-stuck`,
+   `.hero__tlo::after` i `.hero__rozmycie`) — nie biorą ich z tokenów.
+   Przy zmianie `--niebo-1`/`--niebo-2` trzeba je poprawić ręcznie, inaczej
+   pasek nawigacji odcina się od hero jako obcy kolorystycznie prostokąt.
 
 ### Strefy głębokości
 
@@ -638,7 +736,7 @@ w drogę czytaniu ani klikaniu.
 | Efekt | Gdzie | Co robi |
 |---|---|---|
 | `.slonce` | hero | miękka poświata w rogu |
-| `.chmura` × 27 | hero, `#o-nas`, `#zajecia` — po 9 | dryfują po niebie, 82–210 s; ujemne opóźnienia rozrzucają je na starcie po całym niebie |
+| `.chmura` × 30 | `#o-nas` 9, `#zajecia` 15, `#oferta` 6 — **w hero zero** | dryfują po niebie, 82–210 s; ujemne opóźnienia rozrzucają je na starcie po całym niebie; cztery odmiany kształtu i paralaksa przy przewijaniu |
 | `.fala` × 2 | góra `#zajecia` | dwie fale SVG przesuwają się w przeciwnych kierunkach — to linia wody; blok pod falą wygaszany maską, inaczej kończył się prostą linią |
 | `.kaustyka` | góra `#zajecia` | świetlna siatka jak na dnie basenu |
 | `.promienie` | `#kadra` | snopy światła z góry, powolne chwianie |
@@ -665,6 +763,78 @@ się, zanim dojdzie do cięcia.
 Maska jest zawężona selektorem `.efekt:has(.chmura)` — promienie w „Kadrze"
 i bąbelki niżej mają wychodzić z samej krawędzi i nie wolno ich przygaszać.
 
+### Cztery odmiany chmur (01.09.2026)
+
+Sama `.chmura` to cumulus. Trzy klasy modyfikujące zmieniają rozkład brył,
+żeby niebo nie było jednym kształtem powielonym trzydzieści razy:
+
+| Klasa | Sylwetka | Rozmycie | `--glebokosc` | Ile |
+|---|---|---|---|---|
+| *(brak)* | kłąb — dwa garby, klasyczny cumulus | 7 px | 0.8 | 10 |
+| `.chmura--wieza` | wieża — wyrasta pionowo, bryły spiętrzone | 7 px | 1.15 | 5 |
+| `.chmura--pasmo` | pasmo — płaskie, rozciągnięte, prawie bez pionu | 10 px | 0.5 | 10 |
+| `.chmura--strzep` | strzęp — sama mgiełka, pseudoelementy wyłączone | 13 px | 0.25 | 5 |
+
+Każda odmiana nadpisuje **cały** `box-shadow` — lista cieni nie sumuje się
+z regułą bazową, tylko ją zastępuje. Rozmycie rośnie wraz z lekkością:
+im chmura rzadsza, tym mniej ma ostrych krawędzi.
+
+Rozkład odmian idzie za scenariuszem wynurzania: w „O nas" u góry siedzą
+strzępy i pasma (jesteśmy jeszcze we mgle), niżej pojawiają się kłęby;
+„Zajęcia" mają pełną mieszankę; „Kolonie" wracają do lekkich kształtów.
+
+### Paralaksa chmur
+
+Chmura ma już animowany `transform` (poziomy dryf), a jeden element **nie może
+mieć dwóch transformacji naraz**. Rozwiązanie: pionowe przesunięcie wchodzi
+do klatek kluczowych jako zmienna CSS.
+
+```css
+@keyframes plynie {
+  from { transform: translate3d(-35vw, var(--paralaksa, 0px), 0); }
+  to   { transform: translate3d(120vw, var(--paralaksa, 0px), 0); }
+}
+```
+
+Przeglądarka przelicza `translate3d` od nowa, gdy `--paralaksa` się zmieni,
+a poziomy dryf trwa nieprzerwanie. Bez JS zmienna zostaje na `0px` i nic
+się nie psuje.
+
+Skrypt ustawia `--postep-sekcji` (−1 przed sekcją, 0 na środku ekranu,
++1 za nią) na **warstwie `.efekt`**, a nie na każdej chmurze — trzy zapisy
+na klatkę zamiast trzydziestu, resztę załatwia dziedziczenie. Chmura mnoży
+tę wartość przez własną `--glebokosc`, więc strzępy przebywają 28 px,
+kłęby 90 px, a wieże 128 px. Stąd wrażenie planów.
+
+**Paralaksa jest wyłączona poniżej 48 rem** i przy „ogranicz ruch". Powód
+jest wydajnościowy: każda zmiana zmiennej każe przeliczyć klatki kluczowe
+wszystkich trzydziestu chmur, a każda ma filtr rozmycia. Na telefonie efekt
+jest ledwie widoczny, a rachunek realny.
+
+### Odmiany wejścia przy przewijaniu
+
+Domyślnie każdy `.reveal` wjeżdża z dołu. Cztery odmiany dobierają kierunek
+do tego, czym element jest — ruch ma coś znaczyć, a nie tylko się dziać:
+
+| Klasa | Gdzie | Ruch |
+|---|---|---|
+| `.reveal--kurtyna` | nagłówki sekcji (7) | odsłania się od dołu, `clip-path` |
+| `.reveal--skala` | ramki na zdjęcia (18) | delikatne przybliżenie z 0.94 |
+| `.reveal--z-lewej` | „O nas", „Kolonie" | wjeżdża z lewej, po której leży |
+| `.reveal--z-prawej` | „Urodziny" (układ odwrócony) | wjeżdża z prawej |
+
+Wszystkie kończą na `transform: none`, więc wspólna reguła `.js .reveal.is-in`
+gasi je bez wyjątków. Kurtyna wymaga osobnej linii, bo `clip-path` nie jest
+transformacją.
+
+**Pułapka przy karcie w tle.** Obsługa przewijania chodzi na
+`requestAnimationFrame`, a przeglądarka wstrzymuje go w niewidocznej karcie.
+Zaplanowana ramka nigdy wtedy nie dochodzi do skutku, `idRamki` zostaje
+ustawione na stałe i **każde kolejne przewinięcie odbija się od strażnika** —
+pasek postępu i paralaksa zamierają do końca życia strony. Dlatego jest
+nasłuch `visibilitychange`, który po powrocie do karty kasuje zawieszoną
+ramkę i przelicza wszystko od nowa. Nie usuwaj go.
+
 ### Jak zbudowana jest chmura
 
 Prawdziwy cumulus ma kilkanaście kłębów różnej wielkości wzdłuż krawędzi.
@@ -690,9 +860,10 @@ prowadzona w dół do granatu, żeby motyw wody trzymał się logo.
 
 | Token | Wartość | Zastosowanie |
 |---|---|---|
-| `--niebo-1` | `#EAF7FE` | najjaśniejsze niebo (start strony) |
-| `--niebo-2` | `#CDEAFB` | niebo |
-| `--niebo-3` | `#A8DCF4` | niebo tuż nad wodą |
+| `--niebo-1` | `#FFFFFF` | czysta biel — szczyt strony |
+| `--niebo-2` | `#F4FBFE` | biel z ledwie wyczuwalnym błękitem |
+| `--niebo-3` | `#DFF2FC` | tu błękit dopiero się zaczyna |
+| `--niebo-4` | `#A8DCF4` | pełny jasny błękit |
 | `--powierzchnia` | `#7FCBEC` | linia wody |
 | `--woda-1` | `#0F5D8E` | laguna |
 | `--woda-2` | `#0B4D77` | otwarta woda |
@@ -748,12 +919,86 @@ a nie przyciągać wzrok. **Wszystko znika przy systemowym ustawieniu
 Do wydruku strona spłaszcza się do czerni na bieli: gradienty, efekty i pasy
 pełnoekranowe znikają, a strefy głębokości przestawiają tokeny na czarny tekst.
 
+## SEO — jak strona przedstawia się wyszukiwarkom
+
+Uporządkowane 01.09.2026. Trzy rzeczy warto rozumieć, zanim się tu cokolwiek ruszy.
+
+### 1. Adres strony jest wpisany na sztywno w ośmiu miejscach
+
+Strona jest statyczna — nie ma serwera, który podstawiłby adres w locie. Pełny
+adres (`https://…`) musi więc być wpisany literalnie wszędzie tam, gdzie
+wyszukiwarka i portale społecznościowe go oczekują:
+
+| Gdzie | Co |
+|---|---|
+| `index.html` | `<link rel="canonical">` |
+| `index.html` | `og:url` |
+| `index.html` | `og:image` |
+| `index.html` | `twitter:image` |
+| `index.html` | JSON-LD: `url` i `@id` klubu |
+| `index.html` | JSON-LD: `url`, `@id` i `logo`/`image` witryny |
+| `robots.txt` | linia `Sitemap:` |
+| `sitemap.xml` | `<loc>` |
+
+Obecnie wszędzie widnieje adres Vercela. **Po wykupieniu domeny** wystarczy
+zamiana ciągu `https://aerial-paradise-finall.vercel.app` na docelowy —
+w `index.html`, `robots.txt` i `sitemap.xml`. Komentarz nad `canonical`
+przypomina o tym w kodzie.
+
+**Dlaczego adres względny nie wystarczy:** Facebook, LinkedIn i Twitter pobierają
+obrazek z osobnego serwera, który nie wie, z jakiej strony pochodzi ścieżka
+`img/logo.png`. Ścieżka względna = brak podglądu. To był realny błąd do 01.09.2026.
+
+### 2. Karta do udostępniania: `img/og-card.jpg`
+
+Format 1200×630 px, wymagany przez `summary_large_image`. Wcześniej wskazywaliśmy
+tu `logo.png` — kwadrat 512×512, który portale przycinały do paska.
+
+Kartę wygenerowano z `pas-glebia.jpg`: kadr 1,91:1, przyciemniający gradient
+od lewej (żeby tekst był czytelny), logo i dwie linie podpisu. Jeśli trzeba ją
+odtworzyć — skrypt siedzi w historii rozmowy; kluczowe parametry to jakość JPEG 88
+i gradient `rgba(4,26,48)` od `230` do `20` alfa, poziomo.
+
+### 3. Dane strukturalne: `SportsClub` + `WebSite`
+
+Jeden blok JSON-LD w `<head>`, dwa powiązane obiekty w `@graph`. Zawiera adresy
+obu sal, godziny otwarcia, katalog zajęć, ceny urodzin i link do zapisów
+(`ReserveAction`). Sprawdzanie: <https://search.google.com/test/rich-results>.
+
+**Czego tam świadomie nie ma:** `aggregateRating` ani obiektów `Review`.
+Google zabrania oznaczania opinii o samym sobie zebranych na własnej stronie.
+Gwiazdki i tak nie pojawiłyby się w wynikach, a strona mogłaby dostać
+ostrzeżenie w Search Console. Opinie widnieją w wizytówce Google i to wystarcza.
+
+### 4. Pliki robocze nie trafiają na produkcję
+
+Vercel domyślnie serwuje **wszystko**, co jest w repozytorium. Do 01.09.2026 pod
+adresem strony dało się otworzyć `CONTEXT.md`, `serve.ps1` i pliki
+`_TU-WGRAJ-*.txt`. `.vercelignore` je wyklucza; `robots.txt` dodatkowo prosi
+wyszukiwarki, żeby ich nie indeksowały (na wypadek gdyby ktoś wgrał stronę
+gdzie indziej niż na Vercela).
+
+### 5. Czego nie zmieniano, a warto rozważyć
+
+- **`<h1>` brzmi „AerialParadise"** — sama nazwa, bez słów kluczowych. Podtytuł
+  „Akrobatyka powietrzna" siedzi obok, w osobnym `<p>`. Wciągnięcie go do `<h1>`
+  wzmocniłoby sygnał dla Google, ale zmienia strukturę nagłówka w hero —
+  decyzja wizualna, nie techniczna.
+- **Zdjęcia są w JPEG.** WebP dałby 25–35% mniej wagi, ale wymaga wygenerowania
+  drugiego kompletu plików i przepisania 37 tagów `<img>` na `<picture>`.
+- **Fonty z Google Fonts blokują pierwsze malowanie.** Wgranie ich lokalnie
+  usunęłoby dwa połączenia do obcego serwera.
+
 ## Do uzupełnienia
 
 Kolejność od najbardziej widocznego braku:
 
-- **Portrety ośmiu trenerek** (`img/trenerki/`) — to jedyne miejsce, gdzie
-  na stronie wciąż widnieją ramki zastępcze.
+- **Potwierdzenie portretu Marleny Pikor-Leczowicz** — wszystkie osiem zdjęć
+  kadry weszło 22.09.2026 i na stronie nie ma już ani jednej ramki zastępczej.
+  Siedem przypisań podała Justyna; zdjęcie Marleny (DSC04162) ustaliłem
+  przez eliminację, bo na jej liście jej nie było. Rozumowanie opisane
+  w rozdziale „Portrety trenerek" — **warto, żeby Justyna to potwierdziła
+  przed rozgłoszeniem adresu strony.**
 - **Pliki HEIC** — pięciu zdjęć z telefonu nie dało się otworzyć (Windows nie
   ma tu kodeka HEIF, nie ma też ffmpeg ani ImageMagick). Wystarczy wyeksportować
   je z telefonu jako JPG i wrzucić do folderu z materiałami.
@@ -769,6 +1014,6 @@ Kolejność od najbardziej widocznego braku:
   weszło w życie, trzeba je poprawić w `index.html` — pamiętaj, że nazwisko
   występuje w pięciu miejscach karty: nagłówku, podpisie zdjęcia, etykiecie
   ramki zastępczej, treści `alt` i nazwie pliku ze zdjęciem.
-- **Domena** — po jej wykupieniu uzupełnij pełny adres obrazka w `og:image`
-  (komentarz w `<head>`).
+- **Domena** — po jej wykupieniu podmień adres w ośmiu miejscach wypisanych
+  w rozdziale „SEO", a potem zgłoś stronę w Google Search Console.
 - **Cennik i grafik** — materiałów nie było; zapisy prowadzą do systemu ActiveNow.

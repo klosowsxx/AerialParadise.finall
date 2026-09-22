@@ -1,0 +1,14 @@
+# robots.txt — AerialParadise
+# Strona jest jednostronicowa: cała treść siedzi pod adresem "/".
+# Po podpięciu własnej domeny zamień adres w linii "Sitemap" na docelowy.
+
+User-agent: *
+Allow: /
+
+# Pliki robocze projektu — nie należą do treści strony.
+Disallow: /CONTEXT.md
+Disallow: /README.md
+Disallow: /serve.ps1
+Disallow: /*_TU-WGRAJ-*
+
+Sitemap: https://aerial-paradise-finall.vercel.app/sitemap.xml

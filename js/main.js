@@ -44,7 +44,44 @@
 
     var progressBar = header.querySelector("[data-scroll-bar]");
 
-    var headerTimer = null;
+    /* Warstwy chmur dostają paralaksę: każda sekcja mierzy, w którym miejscu
+       ekranu się znajduje, i podaje tę wartość niżej jako `--postep-sekcji`
+       (od 1 przy wjeździe od dołu do -1 przy wyjeździe górą). Pojedyncza
+       chmura mnoży ją przez własną `--glebokosc`, więc lekkie strzępy ledwie
+       drgają, a bliskie wieże jadą wyraźnie — to buduje głębię.
+
+       Ustawiamy jedną zmienną na warstwę (cztery zapisy na klatkę), a nie
+       na każdą z trzydziestu chmur. Resztę roboty wykonuje dziedziczenie. */
+    /* Na wąskich ekranach paralaksa jest wyłączona. Nie chodzi o estetykę,
+       tylko o koszt: każda zmiana `--postep-sekcji` każe przeglądarce
+       przeliczyć klatki kluczowe wszystkich trzydziestu chmur, a każda
+       z nich ma filtr rozmycia. Na telefonie efekt jest ledwie zauważalny
+       (mało miejsca w pionie), a rachunek realny — więc go nie płacimy. */
+    var szerokiEkran = window.matchMedia("(min-width: 48rem)").matches;
+
+    var warstwyChmur = (reduceMotion || !szerokiEkran)
+      ? []
+      : Array.prototype.slice.call(document.querySelectorAll(".efekt"))
+          .filter(function (w) { return w.querySelector(".chmura"); });
+
+    var odswiezParalakse = function () {
+      var wysokoscOkna = window.innerHeight;
+      for (var i = 0; i < warstwyChmur.length; i++) {
+        var w = warstwyChmur[i];
+        var r = w.getBoundingClientRect();
+        if (r.bottom < -200 || r.top > wysokoscOkna + 200) { continue; }
+        // Środek warstwy względem środka ekranu, znormalizowany do -1..1.
+        var srodek = r.top + r.height / 2;
+        var postep = (wysokoscOkna / 2 - srodek) / (wysokoscOkna / 2 + r.height / 2);
+        w.style.setProperty("--postep-sekcji", Math.max(-1, Math.min(1, postep)).toFixed(4));
+      }
+    };
+
+    /* Wcześniej całość chodziła na `setTimeout` co 80 ms — przy pasku postępu
+       i paralaksie było to widać jako skoki. Teraz jedna ramka animacji
+       na zdarzenie przewijania: płynnie i bez nadrabiania zaległości,
+       bo `czekaNaRamke` przepuszcza tylko jedno wywołanie naraz.          */
+    var idRamki = 0;
     var onScroll = function () {
       header.classList.toggle("is-stuck", window.scrollY > 24);
       markCurrent();
@@ -53,16 +90,29 @@
         var done = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
         progressBar.style.setProperty("--progress", done.toFixed(4));
       }
+      odswiezParalakse();
     };
     onScroll();
     window.addEventListener("scroll", function () {
-      if (headerTimer) { return; }
-      headerTimer = window.setTimeout(function () {
-        headerTimer = null;
+      if (idRamki) { return; }
+      idRamki = window.requestAnimationFrame(function () {
+        idRamki = 0;
         onScroll();
-      }, 80);
+      });
     }, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
+
+    /* W karcie w tle przeglądarka wstrzymuje `requestAnimationFrame`.
+       Zaplanowana ramka nigdy wtedy nie dochodzi do skutku, więc `idRamki`
+       zostaje ustawione na stałe i KAŻDE kolejne przewinięcie odbija się
+       od strażnika na górze — pasek postępu i paralaksa zamierają
+       do końca życia strony. Po powrocie do karty kasujemy zawieszoną
+       ramkę i przeliczamy wszystko od nowa.                              */
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) { return; }
+      if (idRamki) { window.cancelAnimationFrame(idRamki); idRamki = 0; }
+      onScroll();
+    });
   }
 
   /* --- Menu mobilne ---------------------------------------------------- */

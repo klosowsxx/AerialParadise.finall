@@ -7,19 +7,44 @@
 <meta name="description" content="Klub akrobatyki powietrznej we Wrocławiu. Szarfy, koło (aerial hoop), akrobatyka i stretching dla dzieci od 4 lat, młodzieży i dorosłych. Dwie sale, grupy do 10 osób, sala 5,3 m wysokości.">
 <meta name="theme-color" content="#107EBF">
 <meta name="author" content="AerialParadise">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 
-<!-- Udostępnianie w mediach społecznościowych.
-     Po podpięciu domeny zamień adres obrazka na pełny, np. https://aerialparadise.pl/img/logo.png -->
+<!-- ══ ADRES STRONY ══════════════════════════════════════════════════════
+     Poniższy adres powtarza się w 6 miejscach tego pliku (canonical, og:url,
+     og:image, twitter:image oraz dwa razy w JSON-LD na dole nagłówka),
+     a dodatkowo w robots.txt i sitemap.xml.
+
+     Po podpięciu własnej domeny podmień go wszędzie, np. w edytorze:
+     zamień "https://aerial-paradise-finall.vercel.app" na "https://aerialparadise.pl".
+     Adres MUSI być pełny (ze schematem https) i bez ukośnika na końcu ścieżek
+     do plików — Facebook i LinkedIn odrzucają ścieżki względne.
+     ════════════════════════════════════════════════════════════════════ -->
+<link rel="canonical" href="https://aerial-paradise-finall.vercel.app/">
+
+<!-- Udostępnianie w mediach społecznościowych -->
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pl_PL">
 <meta property="og:site_name" content="AerialParadise">
+<meta property="og:url" content="https://aerial-paradise-finall.vercel.app/">
 <meta property="og:title" content="AerialParadise — akrobatyka powietrzna we Wrocławiu">
 <meta property="og:description" content="Szarfy, koło, akrobatyka i stretching. Zajęcia od 4. roku życia, kameralne grupy, dwie sale we Wrocławiu.">
-<meta property="og:image" content="img/logo.png">
+<meta property="og:image" content="https://aerial-paradise-finall.vercel.app/img/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zawodniczka w figurze na białych szarfach, logo AerialParadise i podpis „Akrobatyka powietrzna · Wrocław”">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AerialParadise — akrobatyka powietrzna we Wrocławiu">
+<meta name="twitter:description" content="Szarfy, koło, akrobatyka i stretching. Zajęcia od 4. roku życia, kameralne grupy, dwie sale we Wrocławiu.">
+<meta name="twitter:image" content="https://aerial-paradise-finall.vercel.app/img/og-card.jpg">
+<meta name="twitter:image:alt" content="Zawodniczka w figurze na białych szarfach, logo AerialParadise">
 
 <link rel="icon" href="img/favicon-64.png" sizes="any" type="image/png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+
+<!-- Największy element widoczny bez przewijania (LCP) — pobieramy go od razu,
+     zamiast czekać, aż przeglądarka dojdzie do niego przy budowaniu strony.
+     Google mierzy LCP jako jeden z sygnałów jakości (Core Web Vitals). -->
+<link rel="preload" as="image" href="img/hero.jpg" fetchpriority="high">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,41 +52,121 @@
 <link rel="stylesheet" href="css/style.css">
 <script>document.documentElement.className += " js";</script>
 
+<!-- Dane strukturalne dla Google (JSON-LD).
+     Dwa powiązane obiekty: klub (SportsClub) oraz sama witryna (WebSite).
+     Sprawdzanie poprawności: https://search.google.com/test/rich-results
+
+     ŚWIADOMIE NIE MA TU "aggregateRating" ani obiektów "Review".
+     Google zabrania oznaczania opinii o samym sobie na własnej stronie
+     (self-serving reviews) — gwiazdki i tak nie pojawiłyby się w wynikach,
+     a strona mogłaby dostać ostrzeżenie. Opinie z Google wyświetlają się
+     w wizytówce klubu i to wystarcza. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SportsClub",
-  "name": "AerialParadise",
-  "description": "Klub akrobatyki powietrznej we Wrocławiu. Zajęcia na szarfach, kole (aerial hoop), akrobatyka i stretching dla dzieci, młodzieży i dorosłych.",
-  "telephone": "+48731032617",
-  "email": "aerialparadiseclub@gmail.com",
-  "foundingDate": "2025-02",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Kazimierza Funka 11",
-    "addressLocality": "Wrocław",
-    "addressCountry": "PL"
-  },
-  "location": [
+  "@graph": [
     {
-      "@type": "Place",
-      "name": "AerialParadise — siedziba główna",
-      "address": { "@type": "PostalAddress", "streetAddress": "Kazimierza Funka 11", "addressLocality": "Wrocław", "addressCountry": "PL" }
+      "@type": "SportsClub",
+      "@id": "https://aerial-paradise-finall.vercel.app/#klub",
+      "name": "AerialParadise",
+      "alternateName": "AerialParadise Wrocław",
+      "url": "https://aerial-paradise-finall.vercel.app/",
+      "description": "Klub akrobatyki powietrznej we Wrocławiu. Zajęcia na szarfach, kole (aerial hoop), akrobatyka i stretching dla dzieci, młodzieży i dorosłych.",
+      "telephone": "+48731032617",
+      "email": "aerialparadiseclub@gmail.com",
+      "foundingDate": "2025-02",
+      "currenciesAccepted": "PLN",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://aerial-paradise-finall.vercel.app/img/logo.png",
+        "width": 512,
+        "height": 512
+      },
+      "image": [
+        "https://aerial-paradise-finall.vercel.app/img/og-card.jpg",
+        "https://aerial-paradise-finall.vercel.app/img/sala.jpg",
+        "https://aerial-paradise-finall.vercel.app/img/kolo.jpg"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Kazimierza Funka 11",
+        "addressLocality": "Wrocław",
+        "addressRegion": "dolnośląskie",
+        "addressCountry": "PL"
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Wrocław"
+      },
+      "location": [
+        {
+          "@type": "Place",
+          "name": "AerialParadise — siedziba główna",
+          "address": { "@type": "PostalAddress", "streetAddress": "Kazimierza Funka 11", "addressLocality": "Wrocław", "addressRegion": "dolnośląskie", "addressCountry": "PL" },
+          "hasMap": "https://www.google.com/maps/search/?api=1&query=Kazimierza+Funka+11%2C+Wroc%C5%82aw"
+        },
+        {
+          "@type": "Place",
+          "name": "AerialParadise — sala przy Bałtyckiej",
+          "address": { "@type": "PostalAddress", "streetAddress": "Bałtycka 15", "addressLocality": "Wrocław", "addressRegion": "dolnośląskie", "addressCountry": "PL" },
+          "hasMap": "https://www.google.com/maps/search/?api=1&query=Ba%C5%82tycka+15%2C+Wroc%C5%82aw"
+        }
+      ],
+      "openingHoursSpecification": [
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "16:00", "closes": "21:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "10:00", "closes": "13:00" }
+      ],
+      "potentialAction": {
+        "@type": "ReserveAction",
+        "name": "Zapisz się na zajęcia",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://zapisy.activenow.pl/aerialparadise-wroclaw-zapisy-na-zajecia/",
+          "actionPlatform": [
+            "https://schema.org/DesktopWebPlatform",
+            "https://schema.org/MobileWebPlatform"
+          ]
+        }
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Zajęcia i oferta AerialParadise",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Szarfy (aerial silks)", "description": "Zajęcia na szarfach dla dzieci od 4. roku życia, młodzieży i dorosłych — od grup początkujących po wyczynowe.", "serviceType": "Zajęcia akrobatyki powietrznej" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Koło (aerial hoop)", "description": "Trening na kole akrobatycznym — siła, technika i choreografia.", "serviceType": "Zajęcia akrobatyki powietrznej" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Akrobatyka", "description": "Akrobatyka naziemna: przewroty, stania, przerzuty i praca w parach.", "serviceType": "Zajęcia akrobatyczne" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Stretching", "description": "Zajęcia rozciągające poprawiające mobilność i zakres ruchu.", "serviceType": "Zajęcia ruchowe" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Kolonie letnie", "description": "Wyjazdowe kolonie z akrobatyką powietrzną organizowane przez AerialParadise.", "serviceType": "Kolonie dla dzieci" } },
+          {
+            "@type": "Offer",
+            "name": "Urodziny w AerialParadise — do 10 uczestników",
+            "price": "800",
+            "priceCurrency": "PLN",
+            "itemOffered": { "@type": "Service", "name": "Przyjęcie urodzinowe w sali akrobatyki powietrznej", "serviceType": "Organizacja urodzin dla dzieci" }
+          },
+          {
+            "@type": "Offer",
+            "name": "Urodziny w AerialParadise — od 11 do 20 uczestników",
+            "price": "1200",
+            "priceCurrency": "PLN",
+            "itemOffered": { "@type": "Service", "name": "Przyjęcie urodzinowe w sali akrobatyki powietrznej", "serviceType": "Organizacja urodzin dla dzieci" }
+          }
+        ]
+      },
+      "sameAs": [
+        "https://www.facebook.com/share/18w8NAi38Y/?mibextid=wwXIfr",
+        "https://www.instagram.com/aerialparadise.wroclaw",
+        "https://www.tiktok.com/@aerialparadisestudio"
+      ]
     },
     {
-      "@type": "Place",
-      "name": "AerialParadise — sala przy Bałtyckiej",
-      "address": { "@type": "PostalAddress", "streetAddress": "Bałtycka 15", "addressLocality": "Wrocław", "addressCountry": "PL" }
+      "@type": "WebSite",
+      "@id": "https://aerial-paradise-finall.vercel.app/#strona",
+      "url": "https://aerial-paradise-finall.vercel.app/",
+      "name": "AerialParadise",
+      "inLanguage": "pl-PL",
+      "publisher": { "@id": "https://aerial-paradise-finall.vercel.app/#klub" }
     }
-  ],
-  "openingHoursSpecification": [
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "16:00", "closes": "21:00" },
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "10:00", "closes": "13:00" }
-  ],
-  "sameAs": [
-    "https://www.facebook.com/share/18w8NAi38Y/?mibextid=wwXIfr",
-    "https://www.instagram.com/aerialparadise.wroclaw",
-    "https://www.tiktok.com/@aerialparadisestudio"
   ]
 }
 </script>
@@ -147,15 +252,6 @@
 
     <div class="efekt" aria-hidden="true">
       <span class="slonce"></span>
-      <span class="chmura chmura--1"></span>
-      <span class="chmura chmura--2"></span>
-      <span class="chmura chmura--3"></span>
-      <span class="chmura chmura--4"></span>
-      <span class="chmura chmura--5"></span>
-      <span class="chmura chmura--6"></span>
-      <span class="chmura chmura--7"></span>
-      <span class="chmura chmura--8"></span>
-      <span class="chmura chmura--9"></span>
     </div>
 
     <svg class="hero__silks hero__silks--l" viewBox="0 0 300 900" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
@@ -187,9 +283,9 @@
 
   <!-- ================= O NAS ================= -->
   <section class="section strefa--jasna section--compact" id="o-nas">
-    <div class="efekt" aria-hidden="true"><span class="chmura chmura--10"></span><span class="chmura chmura--11"></span><span class="chmura chmura--12"></span><span class="chmura chmura--13"></span><span class="chmura chmura--14"></span><span class="chmura chmura--15"></span><span class="chmura chmura--16"></span><span class="chmura chmura--17"></span><span class="chmura chmura--18"></span></div>
+    <div class="efekt" aria-hidden="true"><span class="chmura chmura--strzep chmura--1"></span><span class="chmura chmura--strzep chmura--2"></span><span class="chmura chmura--pasmo chmura--3"></span><span class="chmura chmura--4"></span><span class="chmura chmura--pasmo chmura--5"></span><span class="chmura chmura--6"></span><span class="chmura chmura--wieza chmura--7"></span><span class="chmura chmura--8"></span><span class="chmura chmura--pasmo chmura--9"></span></div>
     <div class="container split">
-      <div class="reveal">
+      <div class="reveal reveal--z-lewej">
         <span class="eyebrow">O nas</span>
         <h2 class="h2">Klub akrobatyki powietrznej we Wrocławiu</h2>
         <div class="prose mt-5">
@@ -213,7 +309,7 @@
         </ul>
       </div>
 
-      <figure class="photo reveal" style="--ratio: 4 / 5">
+      <figure class="photo reveal reveal--skala" style="--ratio: 4 / 5">
         <img src="img/sala.jpg" alt="Trening na turkusowych szarfach przy ściennym malowidle z palmą" loading="lazy" decoding="async" width="1000" height="1250">
         <figcaption class="photo__hint">
           <span class="photo__label">Zdjęcie sali: tropikalne wnętrze z rozwieszonymi szarfami, kadr pionowy</span>
@@ -233,10 +329,10 @@
         <path fill="currentColor" d="M0 52c60-26 120-26 180 0s120 26 180 0 120-26 180 0 120 26 180 0 120-26 180 0 120 26 180 0v28H0z"/>
       </svg>
     </div>
-    <div class="efekt" aria-hidden="true"><span class="kaustyka"></span><span class="chmura chmura--19"></span><span class="chmura chmura--20"></span><span class="chmura chmura--21"></span><span class="chmura chmura--22"></span><span class="chmura chmura--23"></span><span class="chmura chmura--24"></span><span class="chmura chmura--25"></span><span class="chmura chmura--26"></span><span class="chmura chmura--27"></span></div>
+    <div class="efekt" aria-hidden="true"><span class="kaustyka"></span><span class="chmura chmura--10"></span><span class="chmura chmura--wieza chmura--11"></span><span class="chmura chmura--pasmo chmura--12"></span><span class="chmura chmura--13"></span><span class="chmura chmura--wieza chmura--14"></span><span class="chmura chmura--pasmo chmura--15"></span><span class="chmura chmura--16"></span><span class="chmura chmura--wieza chmura--17"></span><span class="chmura chmura--18"></span><span class="chmura chmura--pasmo chmura--19"></span><span class="chmura chmura--20"></span><span class="chmura chmura--wieza chmura--21"></span><span class="chmura chmura--strzep chmura--22"></span><span class="chmura chmura--23"></span><span class="chmura chmura--pasmo chmura--24"></span></div>
 
     <div class="container">
-      <header class="section__head reveal">
+      <header class="section__head reveal reveal--kurtyna">
         <span class="eyebrow">Zajęcia</span>
         <h2 class="h2">Na czym trenujemy</h2>
       </header>
@@ -356,16 +452,17 @@
        stronę o dwa pełne ekrany, a obie rzeczy odpowiadają na to samo
        pytanie rodzica: „co jeszcze robicie poza cotygodniowymi zajęciami". -->
   <section class="section strefa--jasna" id="oferta">
+    <div class="efekt" aria-hidden="true"><span class="chmura chmura--25"></span><span class="chmura chmura--pasmo chmura--26"></span><span class="chmura chmura--strzep chmura--27"></span><span class="chmura chmura--pasmo chmura--28"></span><span class="chmura chmura--strzep chmura--29"></span><span class="chmura chmura--pasmo chmura--30"></span></div>
     <div class="container">
-      <header class="section__head reveal">
+      <header class="section__head reveal reveal--kurtyna">
         <span class="eyebrow">Poza treningami</span>
         <h2 class="h2">Kolonie</h2>
       </header>
 
       <article class="oferta" id="kolonie">
         <div class="oferta__tekst">
-          <h3 class="h3 reveal">Kolonie i półkolonie AerialParadise</h3>
-          <div class="prose reveal">
+          <h3 class="h3 reveal reveal--z-lewej">Kolonie i półkolonie AerialParadise</h3>
+          <div class="prose reveal reveal--z-lewej">
             <p>AerialParadise to nie tylko regularne treningi!</p>
             <p>Organizujemy również półkolonie we Wrocławiu oraz wyjazdowe kolonie z akrobatyką powietrzną, podczas których łączymy aktywny wypoczynek, dobrą zabawę i oczywiście to, co kochamy najbardziej – szarfy, koła i akrobatykę.</p>
             <p>To czas pełen treningów, różnorodnych atrakcji, wycieczek, zabaw i wspólnych przygód. Zależy nam nie tylko na rozwijaniu umiejętności, ale również na integracji, budowaniu samodzielności i tworzeniu wspomnień, które zostają z dziećmi na długo.</p>
@@ -373,7 +470,7 @@
             <p>Zdjęcia najlepiej pokazują, jak wyglądają nasze wspólne wakacje!</p>
             <p>Jeśli Twoje dziecko chciałoby przeżyć kolejną przygodę razem z AerialParadise i jesteś zainteresowany/a koloniami lub półkoloniami, zapraszamy do kontaktu. Chętnie przekażemy informacje o najbliższych planowanych turnusach.</p>
           </div>
-          <p class="oferta__cta reveal">
+          <p class="oferta__cta reveal reveal--z-lewej">
             <a class="link-arrow" href="#formularz">Zapytaj o najbliższe turnusy</a>
           </p>
         </div>
@@ -382,17 +479,17 @@
           <!-- Kadr poziomy: piątka dziewczyn nie zmieściłaby się w pionowym
                slocie, więc to zdjęcie zajmuje obie kolumny siatki. -->
           <li class="szeroki">
-            <figure class="photo reveal">
+            <figure class="photo reveal reveal--skala">
               <img src="img/kolonie-1.jpg" alt="Uczestniczki kolonii na plaży o zachodzie słońca, obsypane kolorowymi proszkami" loading="lazy" decoding="async" width="1200" height="800">
             </figure>
           </li>
           <li>
-            <figure class="photo reveal">
+            <figure class="photo reveal reveal--skala">
               <img src="img/kolonie-3.jpg" alt="Dziewczynka robiąca mostek na plaży nad morzem" loading="lazy" decoding="async" width="900" height="1200">
             </figure>
           </li>
           <li>
-            <figure class="photo reveal">
+            <figure class="photo reveal reveal--skala">
               <img src="img/kolonie-4.jpg" alt="Uczestniczki kolonii na karuzeli w wesołym miasteczku" loading="lazy" decoding="async" width="900" height="1200">
             </figure>
           </li>
@@ -401,14 +498,14 @@
 
       <article class="oferta oferta--odwrotna" id="urodziny">
         <div class="oferta__tekst">
-          <h3 class="h3 reveal">Urodziny w AerialParadise</h3>
-          <div class="prose reveal">
+          <h3 class="h3 reveal reveal--z-prawej">Urodziny w AerialParadise</h3>
+          <div class="prose reveal reveal--z-prawej">
             <p>Szukasz pomysłu na aktywne i naprawdę wyjątkowe urodziny dla dziecka?</p>
             <p>W AerialParadise zamiast klasycznej imprezy proponujemy urodziny w powietrzu! Podczas dwóch godzin dzieci mogą spróbować swoich sił na szarfach lub kołach, nauczyć się pierwszych figur, a przy tym świetnie bawić się wspólnie z przyjaciółmi.</p>
             <p>Nie zabraknie również gier i zabaw integracyjnych oraz czasu na wspólne świętowanie. Wszystko odbywa się pod opieką naszego instruktora.</p>
           </div>
 
-          <div class="wcenie reveal">
+          <div class="wcenie reveal reveal--z-prawej">
             <h4 class="podtytul">W cenie urodzin</h4>
             <ul class="wcenie__lista">
               <li>2-godzinna impreza urodzinowa</li>
@@ -421,7 +518,7 @@
             </ul>
           </div>
 
-          <div class="prose reveal">
+          <div class="prose reveal reveal--z-prawej">
             <p>Urodziny możemy zorganizować zarówno dla dzieci, które już trenują akrobatykę powietrzną, jak i dla tych, które po raz pierwszy będą miały okazję wejść na szarfę lub koło. Nie jest wymagane wcześniejsze doświadczenie.</p>
           </div>
         </div>
@@ -432,7 +529,7 @@
         <div class="oferta__bok">
           <ul class="oferta__zdjecia oferta__zdjecia--jedno" data-stagger>
             <li>
-              <figure class="photo reveal">
+              <figure class="photo reveal reveal--skala">
                 <img src="img/urodziny.jpg" alt="Grupa dzieci na urodzinach w sali AerialParadise, w tle girlanda „Happy Birthday” i szarfa" loading="lazy" decoding="async" width="960" height="1200">
               </figure>
             </li>
@@ -464,7 +561,7 @@
   <!-- ================= GALERIA ================= -->
   <section class="section strefa--zanurzenie" id="galeria">
     <div class="container">
-      <header class="section__head reveal">
+      <header class="section__head reveal reveal--kurtyna">
         <span class="eyebrow">Galeria</span>
         <h2 class="h2">Z naszej sali</h2>
       </header>
@@ -474,49 +571,49 @@
            otwiera je na środku ekranu; przesuw wtedy staje. -->
       <div class="strip-pas" data-galeria>
         <div class="strip" data-stagger data-galeria-tor>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-1.jpg" alt="Dziewczynka na zajęciach w sali AerialParadise" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Zajęcia dla dzieci</span>
             <!-- plik: img/galeria-1.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-2.jpg" alt="Ćwiczenie na kole przy malowidle z palmą" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Zajęcia dla młodzieży</span>
             <!-- plik: img/galeria-2.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-3.jpg" alt="Występ dziecka na szarfach na scenie" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Zajęcia dla dorosłych</span>
             <!-- plik: img/galeria-3.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-4.jpg" alt="Dziewczynka na kole w sali treningowej" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Zawody i medale</span>
             <!-- plik: img/galeria-4.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-5.jpg" alt="Występ na szarfach w kostiumie scenicznym" loading="lazy" decoding="async" width="1067" height="1600">
           <figcaption class="photo__hint">
             <span class="photo__label">Pokazy i występy</span>
             <!-- plik: img/galeria-5.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-6.jpg" alt="Zawodniczki AerialParadise z pucharami po zawodach" loading="lazy" decoding="async" width="1200" height="1600">
           <figcaption class="photo__hint">
             <span class="photo__label">Zawody i podium</span>
             <!-- plik: img/galeria-6.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-7.jpg" alt="Ćwiczenie na kole przy malowidle z palmami w sali AerialParadise" loading="lazy" decoding="async" width="1067" height="1600">
           <figcaption class="photo__hint">
             <span class="photo__label">Nasza sala</span>
@@ -530,42 +627,42 @@
             <!-- plik: img/kolo-szerokie.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-8.jpg" alt="Występ na szarfach w świetle sceny i dymie" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Pokaz sceniczny</span>
             <!-- plik: img/galeria-8.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-9.jpg" alt="Uczestniczka w figurze na szarfach podczas letnich zajęć" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Trening na szarfach</span>
             <!-- plik: img/galeria-9.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-10.jpg" alt="Dziewczynka schodząca z szarf po ćwiczeniu" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Po ćwiczeniu</span>
             <!-- plik: img/galeria-10.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-11.jpg" alt="Dzieci w kostiumach podczas występu" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Występ w kostiumach</span>
             <!-- plik: img/galeria-11.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-12.jpg" alt="Dziewczynka w figurze akrobatycznej na plaży" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Akrobatyka na plaży</span>
             <!-- plik: img/galeria-12.jpg --><span class="photo__file">Zdjęcie wkrótce</span>
           </figcaption>
         </figure>
-        <figure class="photo reveal">
+        <figure class="photo reveal reveal--skala">
           <img src="img/galeria-13.jpg" alt="Uśmiechnięta uczestniczka zajęć" loading="lazy" decoding="async" width="750" height="1000">
           <figcaption class="photo__hint">
             <span class="photo__label">Radość z zajęć</span>
@@ -582,7 +679,7 @@
     <div class="efekt" aria-hidden="true"><span class="promienie"></span></div>
 
     <div class="container">
-      <header class="section__head reveal">
+      <header class="section__head reveal reveal--kurtyna">
         <span class="eyebrow">Kadra</span>
         <h2 class="h2">Trenerki AerialParadise</h2>
       </header>
@@ -824,7 +921,7 @@
     <div class="efekt" aria-hidden="true"><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span></div>
 
     <div class="container">
-      <header class="section__head reveal">
+      <header class="section__head reveal reveal--kurtyna">
         <span class="eyebrow">Gdzie trenujemy</span>
         <h2 class="h2">Dwie sale we Wrocławiu</h2>
       </header>
@@ -870,7 +967,7 @@
   <section class="section strefa--glebia" id="opinie">
     <div class="efekt" aria-hidden="true"><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span></div>
     <div class="container">
-      <header class="section__head reveal">
+      <header class="section__head reveal reveal--kurtyna">
         <span class="eyebrow">Opinie</span>
         <h2 class="h2">Opinie mówią same za siebie</h2>
       </header>
@@ -954,7 +1051,7 @@
     <div class="efekt" aria-hidden="true"><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span><span class="babelek"></span></div>
 
     <div class="container container--narrow">
-      <header class="section__head reveal">
+      <header class="section__head reveal reveal--kurtyna">
         <span class="eyebrow">Napisz do nas</span>
         <h2 class="h2">Formularz kontaktowy</h2>
         <p class="lede">Zostaw wiadomość, a odpowiemy w godzinach kontaktu: pon.–pt. 16:00–21:00, sob. 10:00–13:00. Jeśli chcesz od razu zarezerwować termin, skorzystaj z zapisów online.</p>

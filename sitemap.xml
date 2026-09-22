@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Mapa strony — AerialParadise.
+
+  Strona jest jednostronicowa, więc mapa zawiera dokładnie jeden adres.
+  Kotwic (#zajecia, #kolonie itd.) NIE wpisuje się do mapy strony — Google
+  traktuje je jako fragmenty tego samego dokumentu, a nie osobne podstrony.
+
+  Po podpięciu domeny podmień <loc> i zaktualizuj <lastmod>.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://aerial-paradise-finall.vercel.app/</loc>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

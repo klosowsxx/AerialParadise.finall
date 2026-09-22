@@ -1,0 +1,9 @@
+# Pliki robocze — nie wgrywamy ich na produkcję, żeby nie były publicznie
+# dostępne pod adresem strony (Vercel serwuje wszystko, czego tu nie wykluczymy).
+README.md
+CONTEXT.md
+serve.ps1
+.claude/
+img/_TU-WGRAJ-ZDJECIA.txt
+img/trenerki/_TU-WGRAJ-PORTRETY.txt
+img/logo-oryginal.pdf
