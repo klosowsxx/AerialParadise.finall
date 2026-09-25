@@ -18,11 +18,12 @@ np. `-Port 5900` (tak jest ustawiony podgląd w `.claude/launch.json`).
 | Plik | Zawartość |
 |---|---|
 | `index.html` | Cała strona |
+| `polityka-prywatnosci.html` | Jedyna podstrona — polityka prywatności |
 | `css/style.css` | Arkusz stylów (tokeny kolorów i typografii w sekcji `:root` na górze) |
 | `js/main.js` | Menu mobilne, wejścia sekcji, karuzela, okno kadry, formularz |
 | `img/` | Logo, favicony, zdjęcia |
 | `robots.txt` | Zgoda dla wyszukiwarek + wskazanie mapy strony |
-| `sitemap.xml` | Mapa strony (jeden adres — strona jest jednostronicowa) |
+| `sitemap.xml` | Mapa strony (strona główna + polityka prywatności) |
 | `.vercelignore` | Lista plików, których Vercel **nie** wgrywa na produkcję |
 | `serve.ps1` | Prosty serwer statyczny do podglądu |
 | `.claude/launch.json` | Konfiguracja podglądu (port 5900) |
@@ -35,6 +36,13 @@ np. `-Port 5900` (tak jest ustawiony podgląd w `.claude/launch.json`).
 `#opinie` → `#formularz` → `#kontakt`.
 
 Menu w górnym pasku, menu mobilne i stopka trzymają dokładnie tę kolejność.
+
+**Nadkreślenie każdej sekcji (`.eyebrow`) brzmi tak samo jak pozycja w pasku**
+— „Kadra”, „Lokalizacje”, „Kontakt” — żeby po kliknięciu w menu od razu
+było widać, że to ta sekcja (ujednolicone 25.09.2026; wcześniej stało tam
+„Poza treningami”, „Gdzie trenujemy” i „Napisz do nas”). Zmieniając etykietę
+w menu, zmień też nadkreślenie. Wyjątek: **„O nas”** ma układ dwukolumnowy
+bez `.section__head`, więc nie ma nad sobą kreski — sam napis jest na miejscu.
 
 Linkowanie do konkretnej sekcji z zewnątrz: `adres-strony/#szarfy`.
 
@@ -98,7 +106,7 @@ Sterowanie: strzałki, przeciągnięcie palcem lub gładzikiem, oraz ← → na
 klawiaturze po ustawieniu fokusu na panelu. **Na telefonie strzałki stoją nad
 slajdem, z licznikiem między nimi**; od 768 px wracają po bokach toru.
 
-Licznik na styku pętli pokazuje np. „8 i 1 z 8" zamiast „8–1 z 8" — zakres
+Licznik na styku pętli pokazuje np. „9 i 1 z 9" zamiast „9–1 z 9" — zakres
 malejący czytałby się jak usterka.
 
 Dodanie zajęć lub trenerki: skopiuj w `index.html` blok
@@ -107,8 +115,9 @@ wewnątrz `carousel__track`. Kopie, licznik i zapętlenie zrobią się same.
 
 ## Kadra: zdjęcie zamienia się w opis
 
-Opisy sześciu trenerek pochodzą wprost od klienta (aktualizacja 27.08.2026);
-Zofia Kłak i Weronika Koślińska mają wersje z pierwszej partii materiałów.
+W sekcji jest **dziewięć trenerek**. Opisy pochodzą wprost od klienta
+(aktualizacja 27.08.2026, Iwona Łukanowicz doszła 25.09.2026); Zofia Kłak
+i Weronika Koślińska mają wersje z pierwszej partii materiałów.
 
 Sekcja „Kadra" przewija się w bok — **jedna trenerka na ekranie telefonu,
 dwie od 992 px**. Karta ma stałą szerokość (26 rem), więc od 992 px
@@ -323,6 +332,45 @@ i wklej otrzymany adres w atrybut `data-endpoint` w `index.html`:
 To wszystko — skrypt sam przełączy się na wysyłkę w tle i pokaże potwierdzenie
 na stronie. Adres e-mail klubu zostaje wtedy po stronie usługi, nie w kodzie.
 
+## Polityka prywatności (25.09.2026)
+
+Osobna podstrona `polityka-prywatnosci.html`. Korzysta z tego samego
+`css/style.css` i tej samej stopki co strona główna, więc nie wygląda jak
+doklejka; style własne (`.doc…`) leżą w sekcji 21 arkusza.
+
+Prowadzą do niej **dwa linki**: pod polem zgody w formularzu
+(`.form__prywatnosc`) i w stopce. Oba miejsca są świadome — pierwszy jest
+tam, gdzie odwiedzający właśnie oddaje dane, drugi tam, gdzie takich
+dokumentów się szuka.
+
+Treść opisuje **to, co strona naprawdę robi**, nie wzorzec z internetu:
+
+| W dokumencie | Skąd to wiadomo |
+|---|---|
+| Pola formularza | `index.html`, sekcja `#formularz` |
+| FormSubmit jako odbiorca | `data-endpoint` w znaczniku `<form>` |
+| Gmail klubu | adres w `data-endpoint` i w pasie kontaktowym |
+| Google Fonts widzi IP | `<link>` do `fonts.googleapis.com` w nagłówku |
+| Brak ciasteczek i analityki | w `js/main.js` nie ma `cookie`, `localStorage` ani żadnego licznika |
+
+**Jeśli zmienisz którąś z tych rzeczy, popraw też politykę.** Najbardziej
+prawdopodobne zmiany: podłączenie statystyk odwiedzin (dojdzie rozdział
+o ciasteczkach i zgoda), przeniesienie czcionek na własny serwer (wtedy
+akapit o Google Fonts znika) albo zmiana usługi obsługującej formularz.
+
+Na stronie stoi wyraźnie oznaczona ramka **„Do uzupełnienia przed
+publikacją"** z prośbą o pełną nazwę podmiotu, adres rejestrowy i NIP —
+tych danych nie ma w żadnym materiale od klienta, a zmyślanie ich
+w dokumencie o ochronie danych byłoby najgorszym z możliwych pomysłów.
+Ramka ma klasę `.doc__uwaga` i atrybut `data-do-uzupelnienia`, więc łatwo
+ją znaleźć i usunąć razem z akapitem, który opisuje.
+
+**To nie jest porada prawna.** Dokument opisuje stan faktyczny strony
+i trzyma się struktury wymaganej przez RODO, ale przed rozgłoszeniem adresu
+warto, żeby przeczytała go Justyna — zwłaszcza fragmenty o okresie
+przechowywania korespondencji (przyjęto 3 lata) i o tym, że dane z formularza
+nie są używane do marketingu.
+
 ## Portrety trenerek (22.09.2026)
 
 Sesja studyjna na niebieskim tle, oryginały 1867×2800 (2:3), bez znacznika
@@ -347,33 +395,34 @@ z samych zdjęć):
 | `weronika-joachimiak.jpg` | DSC04187 | |
 | `weronika-koslinska.jpg` | DSC04194 | alternatywa DSC04283 — szpagat stojący, kadr 4:5 ucinałby uniesioną nogę |
 | `katarzyna-kosiorek.jpg` | DSC04170 | alternatywa DSC04270 — z szarfą, ale postać poza osią i lekko prześwietlona |
-| `marlena-pikor-leczowicz.jpg` | DSC04162 | **ustalone przez eliminację, nie z listy Justyny — wymaga potwierdzenia** |
+| `iwona-lukanowicz.jpg` | DSC04253 | potwierdzone przez klienta 25.09.2026 — patrz niżej |
+
+**Marleny Pikor-Leczowicz nie było na sesji**, więc jej karta stoi z ramką
+zastępczą. Brakujący plik: `marlena-pikor-leczowicz.jpg`.
 
 Przy dwóch osobach Justyna zostawiła wybór. W obu przypadkach wygrało ujęcie
 portretowe, bo kafelki stoją obok siebie w karuzeli i każde odstępstwo
 od wspólnego kadru rzuca się w oczy.
 
-### Skąd wzięło się zdjęcie Marleny
+### Ósma osoba z sesji to Iwona, nie Marlena
 
-Na liście Justyny jej nie było. Zdjęcia nie mają nazwisk w metadanych, więc
-nie da się tego odczytać z pliku. Ustalenie poszło przez eliminację:
+Na liście przypisań od Justyny brakowało jednej osoby. Ustaliłem ją przez
+eliminację — blondynka ze związanymi włosami, klatki **04160/04162** (na tle)
+i **04253–04256** (z szarfą) — i podpisałem jako Marlenę Pikor-Leczowicz,
+bo tylko jej brakowało na liście.
 
-1. W sesji występuje **dokładnie osiem osób**, każda sfotografowana w dwóch
-   ustawieniach — na samym tle i z przyrządem (szarfa albo koło).
-2. Siedem z nich ma potwierdzone przypisanie od Justyny.
-3. Zostaje jedna: blondynka ze związanymi włosami, niebieską gumką
-   i koralową szminką — klatki **04160, 04162** (na tle) oraz
-   **04253–04256** (z szarfą). Porównanie twarzy potwierdziło, że to ta sama
-   osoba i że nie jest żadną z siedmiu pozostałych.
+Zdjęcia były dobrane dobrze, nazwisko źle. **25.09.2026 klient wyjaśnił, że to
+Iwona „Panda” Łukanowicz**, której wcześniej w ogóle nie było na stronie,
+a Marleny na sesji nie było i jej zdjęcia po prostu nie ma. Teraz DSC04253
+stoi podpisane jako Iwona, a karta Marleny wróciła do ramki zastępczej.
 
-Po drodze wyjaśniły się dwie mylące grupy: **04154–04156 to Agnieszka**
+Przy okazji wyjaśniły się dwie mylące grupy: **04154–04156 to Agnieszka**
 (te same rysy co na 04261–63 z szarfą), **04176–04179 to Monika**,
 a **04173/04174 to Kasia**, nie osobna osoba.
 
-Wniosek jest poprawny, o ile w sesji byli wyłącznie trenerzy klubu i Marlena
-w niej uczestniczyła. Tego z samych zdjęć nie da się sprawdzić — **niech
-Justyna rzuci okiem, zanim strona pójdzie w świat.** Podmiana to jedna
-komenda, opisana wyżej.
+Wniosek na przyszłość: eliminacja potrafi pokazać, że dwie serie zdjęć
+przedstawiają tę samą osobę, ale nie powie, jak ta osoba się nazywa.
+Nazwiska bierz z listy od klienta albo dopytaj.
 
 Oryginały leżą w `C:\Users\marcel\Desktop\trenerki` (45 plików z sesji).
 
@@ -469,12 +518,10 @@ Wcześniej był tu drugi taki pas (`pas-scena.jpg`, między zajęciami a galeri�
 **usunięty**, bo w poziomym kadrze na całą szerokość ucinał postaci głowę.
 Plik został w `img/`, gdyby przydał się w innym miejscu.
 
-### Portrety trenerek — **brakuje wszystkich ośmiu**
+### Portrety trenerek — **brakuje jednego z dziewięciu**
 
-Pionowe 4:5, folder `img/trenerki/`:
-`justyna-moczulska.jpg`, `agnieszka-polak.jpg`, `monika-ochmanska.jpg`,
-`zofia-klak.jpg`, `weronika-joachimiak.jpg`, `weronika-koslinska.jpg`,
-`marlena-pikor-leczowicz.jpg`, `katarzyna-kosiorek.jpg`
+Pionowe 4:5, folder `img/trenerki/`. Osiem plików jest na miejscu; brakuje
+tylko `marlena-pikor-leczowicz.jpg`, bo Marleny nie było na sesji zdjęciowej.
 
 Wskazówki: dłuższy bok ok. 1600 px, plik do ~400 KB. Zdjęcia są przycinane
 (`object-fit: cover`), więc postać nie powinna być tuż przy krawędzi kadru.
@@ -485,7 +532,7 @@ zastępcze z nazwiskami. Kliknięcie i tak działa: opis odsłania się normalni
 
 ## Co jest inne na telefonie
 
-Strona jest długa z natury — cztery pełne opisy zajęć, osiem biogramów
+Strona jest długa z natury — cztery pełne opisy zajęć, dziewięć biogramów
 i formularz. Żeby dało się z niej korzystać kciukiem, poniżej 768 px zmienia
 się kilka rzeczy:
 
@@ -898,8 +945,8 @@ Oba kroje mają pełny zestaw polskich znaków (sprawdzone: `latin-ext`).
 
 | Gdzie | Co | Czas |
 |---|---|---|
-| Wejście sekcji | delikatne podniesienie + pojawienie, kaskadowo | 380 ms |
-| Kreska nad nagłówkiem sekcji | dorysowuje się od lewej | 400 ms |
+| Wejście sekcji | delikatne podniesienie + pojawienie, kaskadowo | 240 ms |
+| Kreska nad nagłówkiem sekcji | dorysowuje się od lewej | 300 ms |
 | Zdjęcia | powiększenie pod wskaźnikiem | 600 ms |
 | Przyciski i strzałki | zmiana barwy + wciśnięcie | 160 ms |
 | Nagłówek strony | pasek postępu przewijania pod przyklejonym paskiem | na bieżąco |
@@ -913,7 +960,27 @@ Oba kroje mają pełny zestaw polskich znaków (sprawdzone: `latin-ext`).
 
 Wszystko na `transform`/`opacity` (nie powoduje przeliczania układu). Efekty
 morskie są długie i o niskim kontraście celowo — mają dawać wrażenie wody,
-a nie przyciągać wzrok. **Wszystko znika przy systemowym ustawieniu
+a nie przyciągać wzrok.
+
+### Kiedy sekcja się odkrywa (poprawione 25.09.2026)
+
+Wejścia sekcji wyglądały, jakby strona doczytywała się w trakcie przewijania.
+Składały się na to trzy rzeczy naraz i wszystkie trzy zostały skrócone:
+
+| Co | Było | Jest |
+|---|---|---|
+| `rootMargin` obserwatora | `0px 0px -12% 0px` — element musiał wjechać głęboko w ekran | `0px 0px 15% 0px` — zaczyna wchodzić jeszcze pod krawędzią |
+| `threshold` | `0.08` — do tego 8 % wysokości elementu | `0` — wystarczy pierwszy piksel |
+| Czas animacji | `--t-slow` (380 ms) | `--t-base` (240 ms) |
+| Kaskada w grupach | co 70 ms, do 420 ms | co 45 ms, do 240 ms |
+
+Razem daje to około **220 px wcześniejszy start** przy ekranie 812 px
+i o 140 ms krótszy ruch — nagłówek jest gotowy, zanim wjedzie w kadr.
+Zabezpieczenie na wypadek nieczynnego obserwatora zeszło z 2500 na 1200 ms.
+
+Gdyby kiedyś trzeba było **wyłączyć wejścia całkiem**, wystarczy w `.js .reveal`
+ustawić `opacity: 1; transform: none` — reszta mechanizmu jest wtedy niegroźna,
+bo JS tylko dokleja klasę `is-in`. **Wszystko znika przy systemowym ustawieniu
 „ogranicz ruch"**; bąbelkom zostaje wtedy stała, ledwie widoczna przezroczystość.
 
 Do wydruku strona spłaszcza się do czerni na bieli: gradienty, efekty i pasy
@@ -993,12 +1060,13 @@ gdzie indziej niż na Vercela).
 
 Kolejność od najbardziej widocznego braku:
 
-- **Potwierdzenie portretu Marleny Pikor-Leczowicz** — wszystkie osiem zdjęć
-  kadry weszło 22.09.2026 i na stronie nie ma już ani jednej ramki zastępczej.
-  Siedem przypisań podała Justyna; zdjęcie Marleny (DSC04162) ustaliłem
-  przez eliminację, bo na jej liście jej nie było. Rozumowanie opisane
-  w rozdziale „Portrety trenerek" — **warto, żeby Justyna to potwierdziła
-  przed rozgłoszeniem adresu strony.**
+- **Dane podmiotu w polityce prywatności** — pełna nazwa, adres rejestrowy
+  i NIP. Do czasu uzupełnienia na podstronie widać ramkę „Do uzupełnienia
+  przed publikacją", więc brak rzuca się w oczy i nie da się o nim zapomnieć.
+- **Portret Marleny Pikor-Leczowicz** — jedyna karta kadry bez zdjęcia.
+  Marleny nie było na sesji z 09.2026, więc trzeba osobnego kadru: pionowy
+  4:5, najlepiej na tym samym niebieskim tle. Po wgraniu pliku o nazwie
+  `marlena-pikor-leczowicz.jpg` do `img/trenerki/` ramka zastępcza znika sama.
 - **Pliki HEIC** — pięciu zdjęć z telefonu nie dało się otworzyć (Windows nie
   ma tu kodeka HEIF, nie ma też ffmpeg ani ImageMagick). Wystarczy wyeksportować
   je z telefonu jako JPG i wrzucić do folderu z materiałami.

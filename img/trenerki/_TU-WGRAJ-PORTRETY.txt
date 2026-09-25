@@ -1,13 +1,22 @@
-Tu wgraj portrety trenerek (pionowe, proporcje 4:5, dłuższy bok ok. 1600 px):
+Tu wgraj portrety trenerek (pionowe, proporcje 4:5, dłuższy bok ok. 1600 px).
+
+Brakuje jeszcze jednego pliku:
+
+  marlena-pikor-leczowicz.jpg
+
+Marleny nie było na sesji zdjęciowej z 09.2026, więc na stronie stoi
+w jej miejscu ramka z opisem. Po wgraniu pliku o dokładnie tej nazwie
+ramka znika sama - nie trzeba nic zmieniać w kodzie.
+
+Już wgrane:
 
   justyna-moczulska.jpg
   agnieszka-polak.jpg
-  monika-koziol.jpg
+  monika-ochmanska.jpg
   zofia-klak.jpg
   weronika-joachimiak.jpg
   weronika-koslinska.jpg
-  marlena-pikor-leczowicz.jpg
+  iwona-lukanowicz.jpg
   katarzyna-kosiorek.jpg
 
-Nazwy muszą się zgadzać co do znaku. Po wgraniu pliku ramka z opisem
-znika sama - nie trzeba nic zmieniać w kodzie.
+Nazwy muszą się zgadzać co do znaku.

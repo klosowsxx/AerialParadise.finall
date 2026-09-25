@@ -2,7 +2,7 @@
 <!--
   Mapa strony — AerialParadise.
 
-  Strona jest jednostronicowa, więc mapa zawiera dokładnie jeden adres.
+  Strona jest jednostronicowa; oprócz niej jest tylko polityka prywatności.
   Kotwic (#zajecia, #kolonie itd.) NIE wpisuje się do mapy strony — Google
   traktuje je jako fragmenty tego samego dokumentu, a nie osobne podstrony.
 
@@ -11,8 +11,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://aerial-paradise-finall.vercel.app/</loc>
-    <lastmod>2026-08-31</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://aerial-paradise-finall.vercel.app/polityka-prywatnosci.html</loc>
+    <lastmod>2026-09-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
   </url>
 </urlset>

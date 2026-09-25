@@ -288,7 +288,7 @@ p:last-child { margin-bottom: 0; }
   background: var(--rule);
   transform-origin: left center;
 }
-.js .section__head.reveal::before { transform: scaleX(0); transition: transform 400ms var(--ease-out) 120ms; }
+.js .section__head.reveal::before { transform: scaleX(0); transition: transform 300ms var(--ease-out); }
 .js .section__head.reveal.is-in::before { transform: scaleX(1); }
 .section__head .eyebrow { margin: 0; }
 .section__head .lede { margin: 0; max-width: 40ch; }
@@ -1481,10 +1481,13 @@ p:last-child { margin-bottom: 0; }
   to   { transform: rotate(0.9deg); }
 }
 
+/* Wejście trwa `--t-base`, nie `--t-slow`: przy 380 ms nagłówek dochodził do
+   pełnej krycia już dobrze widoczny na ekranie i wyglądało to, jakby strona
+   się doczytywała. 240 ms wystarcza, żeby ruch było widać.                 */
 .js .reveal {
   opacity: 0;
   transform: translateY(14px);
-  transition: opacity var(--t-slow) var(--ease-out), transform var(--t-slow) var(--ease-out);
+  transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
   transition-delay: var(--delay, 0ms);
 }
 .js .reveal.is-in { opacity: 1; transform: none; }
@@ -1508,9 +1511,9 @@ p:last-child { margin-bottom: 0; }
 .js .reveal--kurtyna {
   transform: translateY(10px);
   clip-path: inset(0 0 100% 0);
-  transition: opacity var(--t-slow) var(--ease-out),
-              transform var(--t-slow) var(--ease-out),
-              clip-path var(--t-slow) var(--ease-out);
+  transition: opacity var(--t-base) var(--ease-out),
+              transform var(--t-base) var(--ease-out),
+              clip-path var(--t-base) var(--ease-out);
   transition-delay: var(--delay, 0ms);
 }
 .js .reveal--kurtyna.is-in { clip-path: inset(0 0 0 0); }
@@ -2296,3 +2299,58 @@ p:last-child { margin-bottom: 0; }
   -webkit-mask-image: var(--maska-efektu);
   mask-image: var(--maska-efektu);
 }
+
+/* == 21. PODSTRONA Z DOKUMENTEM (polityka prywatności) ===================
+   Jedna podstrona tekstowa, więc zamiast osobnego arkusza dokładamy tu
+   kilka reguł. Wszystko inne — pasek, stopka, typografia, strefa jasna —
+   jest wspólne z `index.html`, żeby podstrona nie wyglądała jak doklejka.
+
+   `.prose` ma 55ch dla akapitu obok zdjęcia; tutaj tekst stoi sam,
+   więc 66ch trzyma wiersz w okolicach 75 znaków.                        */
+.doc { max-width: 42rem; }
+.doc .prose { max-width: 66ch; color: var(--on-surface); }
+.doc .prose h2 { margin: var(--space-6) 0 var(--space-3); color: var(--heading); }
+.doc .prose h2:first-child { margin-top: 0; }
+.doc .prose p { margin: 0 0 var(--space-4); }
+.doc .prose ul { margin: 0 0 var(--space-4); padding-left: 1.25rem; }
+.doc .prose li { margin-bottom: var(--space-2); }
+
+.doc__meta {
+  margin: 0 0 var(--space-5);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Notatka dla właściciela strony, nie dla odwiedzającego. Przerywana
+   obwódka i inne tło mówią „to jeszcze nie jest gotowe" — ten sam język
+   co ramka w miejscu brakującego zdjęcia.                               */
+.doc__uwaga {
+  margin: var(--space-5) 0;
+  padding: var(--space-4);
+  border: 1px dashed var(--rule);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 0.9375rem;
+}
+.doc__uwaga code {
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+  background: rgba(6, 48, 74, 0.08);
+  font-size: 0.9em;
+}
+
+.doc__powrot { margin: var(--space-6) 0 0; }
+
+/* Odnośnik do polityki pod formularzem — ma być widoczny, ale nie ma
+   konkurować z przyciskiem wysyłki stojącym tuż obok. Cel dotyku 44 px
+   jak przy numerze telefonu w `.form__note` — ten sam próg w całym
+   formularzu, żeby nic nie wypadało z reguły.                           */
+.form__prywatnosc {
+  margin: var(--space-2) 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.form__prywatnosc a { display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 700; }

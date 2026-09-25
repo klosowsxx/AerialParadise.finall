@@ -201,7 +201,13 @@
         entry.target.classList.add("is-in");
         observer.unobserve(entry.target);
       });
-    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
+    /* Dolny margines jest DODATNI, więc pole obserwacji sięga 15 % ekranu
+       poniżej jego krawędzi: nagłówek zaczyna wchodzić, zanim go widać,
+       i na ekranie jest już gotowy. Przy ujemnym (-12 %) i progu 0.08 trzeba
+       było dowieźć element sto kilkadziesiąt pikseli w głąb ekranu, a potem
+       czekało się jeszcze na animację — stąd wrażenie, że sekcja doczytuje
+       się z opóźnieniem.                                                  */
+    }, { rootMargin: "0px 0px 15% 0px", threshold: 0 });
 
     Array.prototype.forEach.call(revealables, function (el) { observer.observe(el); });
 
@@ -217,7 +223,7 @@
           el.classList.add("is-in");
         }
       });
-    }, 2500);
+    }, 1200);
   }
 
   // Opóźnienia kaskadowe dla elementów w tej samej grupie.
@@ -225,7 +231,7 @@
   Array.prototype.forEach.call(groups, function (group) {
     var items = group.querySelectorAll(":scope > .reveal");
     Array.prototype.forEach.call(items, function (item, index) {
-      item.style.setProperty("--delay", Math.min(index * 70, 420) + "ms");
+      item.style.setProperty("--delay", Math.min(index * 45, 240) + "ms");
     });
   });
 
